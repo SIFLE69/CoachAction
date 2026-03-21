@@ -1,37 +1,54 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+const nav = [
+    { path: '/dashboard', label: 'Today', icon: '◉' },
+    { path: '/students', label: 'Students', icon: '◎' },
+    { path: '/batches', label: 'Batches', icon: '▦' },
+    { path: '/attendance', label: 'Attendance', icon: '✓' },
+    { path: '/fees', label: 'Fees', icon: '₹' },
+];
 
 export default function Sidebar() {
     const location = useLocation();
-    const links = [
-        { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-        { path: '/students', label: 'Students', icon: '👨‍🎓' },
-        { path: '/batches', label: 'Batches', icon: '📅' },
-        { path: '/attendance', label: 'Attendance', icon: '✅' },
-        { path: '/fees', label: 'Fees', icon: '💰' },
-    ];
+    const { logout } = useAuth();
 
     return (
-        <aside className="w-64 bg-surface-900 border-r border-surface-700/50 min-h-screen hidden lg:block sticky top-0">
-            <div className="p-6">
-                <div className="flex items-center gap-3 mb-10">
-                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold">CA</div>
-                    <span className="text-lg font-bold text-white">CoachAction</span>
+        <aside className="w-56 border-r border-white/[0.04] min-h-screen hidden lg:flex flex-col sticky top-0" style={{ background: 'rgba(10,10,10,0.95)' }}>
+            <div className="px-5 pt-6 pb-8">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-primary-600 flex items-center justify-center text-white text-xs font-bold">C</div>
+                    <span className="text-sm font-semibold text-surface-200 tracking-tight">CoachAction</span>
                 </div>
-                <nav className="space-y-1">
-                    {links.map((link) => (
-                        <Link
-                            key={link.path}
-                            to={link.path}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${location.pathname === link.path
-                                    ? 'bg-primary-500/10 text-primary-400'
-                                    : 'text-surface-200/50 hover:bg-surface-800 hover:text-white'
-                                }`}
-                        >
-                            <span>{link.icon}</span>
-                            {link.label}
-                        </Link>
-                    ))}
-                </nav>
+            </div>
+
+            <nav className="px-3 flex-1">
+                <p className="section-label px-2 mb-2">Menu</p>
+                <div className="space-y-0.5">
+                    {nav.map(link => {
+                        const active = location.pathname === link.path;
+                        return (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-smooth ${active
+                                        ? 'bg-white/[0.08] text-white'
+                                        : 'text-surface-400 hover:bg-white/[0.04] hover:text-surface-200'
+                                    }`}
+                            >
+                                <span className="text-xs w-5 text-center opacity-60">{link.icon}</span>
+                                {link.label}
+                            </Link>
+                        );
+                    })}
+                </div>
+            </nav>
+
+            <div className="px-3 pb-5">
+                <button onClick={logout} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-surface-500 hover:text-surface-300 hover:bg-white/[0.04] transition-smooth">
+                    <span className="text-xs w-5 text-center">↗</span>
+                    Sign out
+                </button>
             </div>
         </aside>
     );

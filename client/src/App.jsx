@@ -11,11 +11,15 @@ import Sidebar from './components/Sidebar';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return null;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-surface-500 text-sm">Loading...</p>
+    </div>
+  );
   return user ? (
-    <div className="flex bg-surface-950 min-h-screen">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex-1 overflow-x-hidden">{children}</div>
+      <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto">{children}</main>
     </div>
   ) : <Navigate to="/login" replace />;
 }

@@ -6,6 +6,7 @@ export default function FeesPage() {
     const [selectedStudent, setSelectedStudent] = useState('');
     const [amount, setAmount] = useState('');
     const [pendingFees, setPendingFees] = useState([]);
+    const [showPayment, setShowPayment] = useState(false);
 
     useEffect(() => { fetchData(); }, []);
     const fetchData = async () => {
@@ -19,91 +20,104 @@ export default function FeesPage() {
         await api.post('/payments', { studentId: selectedStudent, amount: Number(amount) });
         setAmount('');
         setSelectedStudent('');
+        setShowPayment(false);
         fetchData();
-        alert('Payment recorded!');
     };
 
     const copyReminder = (student) => {
-        const msg = `Hi ${student.name}, your ₹${student.totalFees - student.paidFees} fees are pending. Please clear it soon.`;
-        navigator.clipboard.writeText(msg);
-        alert(`Reminder copied for ${student.name}`);
+        const pending = student.totalFees - student.paidFees;
+        navigator.clipboard.writeText(`Hi ${student.name}, your ₹${pending} fees are pending. Please clear it soon.`);
     };
 
-    return (
-        <div className="p-8">
-            <h1 className="text-3xl font-black text-white uppercase tracking-tighter mb-10">Revenue & Fees</h1>
+    const totalOutstanding = students.reduce((sum, s) => sum + ((s.pendingFees || 0)), 0);
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-1 space-y-8">
-                    <form onSubmit={handlePayment} className="glass p-8 rounded-3xl border border-white/5 bg-surface-900/40">
-                        <h3 className="text-sm font-black text-white uppercase italic mb-6 flex items-center gap-2">💰 New Payment <span className="h-0.5 bg-surface-800 flex-1"></span></h3>
-                        <div className="mb-4">
-                            <label className="block text-[10px] text-surface-200/50 mb-1 uppercase font-black">Student Name</label>
-                            <select
-                                value={selectedStudent}
-                                onChange={e => setSelectedStudent(e.target.value)}
-                                className="w-full bg-surface-950 p-3 rounded-xl border border-white/5 text-white cursor-pointer hover:border-primary-500 transition-colors"
-                                required
-                            >
-                                <option value="" className="bg-surface-950">Select Student</option>
+    return (
+        <div className="page animate-in">
+            <div className="flex items-center justify-between mb-10">
+                <div>
+                    <h1 className="page-title">Fees</h1>
+                    <p className="page-subtitle">₹{totalOutstanding.toLocaleString()} outstanding</p>
+                </div>
+                <button onClick={() => setShowPayment(!showPayment)} className="btn btn-primary">
+                    {showPayment ? 'Cancel' : '+ Record payment'}
+                </button>
+            </div>
+
+            {showPayment && (
+                <form onSubmit={handlePayment} className="card p-6 mb-10 animate-in">
+                    <div className="grid grid-cols-2 gap-5 mb-5">
+                        <div>
+                            <label className="text-sm text-surface-500 mb-2 block">Student</label>
+                            <select value={selectedStudent} onChange={e => setSelectedStudent(e.target.value)} className="input" required>
+                                <option value="">Select student</option>
                                 {students.map(s => (
-                                    <option key={s._id} value={s._id} className="bg-surface-950">
-                                        {s.name} (Pending: ₹{(s.pendingFees || 0).toLocaleString()})
-                                    </option>
+                                    <option key={s._id} value={s._id}>{s.name} (₹{(s.pendingFees || 0).toLocaleString()} pending)</option>
                                 ))}
                             </select>
                         </div>
-                        <div className="mb-8">
-                            <label className="block text-[10px] text-surface-200/50 mb-1 uppercase font-black">Payment Amount (₹)</label>
-                            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-surface-950 p-3 rounded-xl border border-white/5 text-white" required />
+                        <div>
+                            <label className="text-sm text-surface-500 mb-2 block">Amount (₹)</label>
+                            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="input" placeholder="0" required />
                         </div>
-                        <button type="submit" className="w-full bg-success text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-success/20">RECORD PAYMENT</button>
-                    </form>
+                    </div>
+                    <button type="submit" className="btn btn-success w-full py-3">Record payment</button>
+                </form>
+            )}
 
-                    <div className="glass p-8 rounded-3xl border border-warning/20 bg-warning/5">
-                        <h3 className="text-sm font-black text-warning uppercase italic mb-6">📢 Pending Reminders</h3>
-                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                            {pendingFees.map(s => (
-                                <div key={s._id} className="flex justify-between items-center bg-surface-950 p-4 rounded-2xl border border-white/5">
-                                    <div>
-                                        <p className="text-xs font-black text-white uppercase">{s.name}</p>
-                                        <p className="text-[10px] text-danger font-black mt-1">₹{(s.totalFees - s.paidFees).toLocaleString()}</p>
+            {/* Pending reminders */}
+            {pendingFees.length > 0 && (
+                <section className="mb-12">
+                    <p className="section-label">Pending reminders</p>
+                    <div className="card overflow-hidden">
+                        {pendingFees.map(s => {
+                            const pending = s.totalFees - s.paidFees;
+                            return (
+                                <div key={s._id} className="table-row flex items-center justify-between px-6 py-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center text-sm font-semibold text-danger flex-shrink-0">
+                                            {s.name?.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-[15px] font-medium text-white">{s.name}</p>
+                                            <p className="text-sm text-danger">₹{pending.toLocaleString()} pending</p>
+                                        </div>
                                     </div>
-                                    <button onClick={() => copyReminder(s)} className="text-xs bg-surface-800 px-3 py-1 rounded-lg font-black hover:bg-primary-600 transition-colors">COPY</button>
+                                    <button onClick={() => copyReminder(s)} className="btn btn-ghost">Copy reminder</button>
                                 </div>
-                            ))}
-                        </div>
+                            );
+                        })}
                     </div>
-                </div>
+                </section>
+            )}
 
-                <div className="lg:col-span-2">
-                    <div className="glass rounded-3xl overflow-hidden border border-white/5 bg-surface-900/40">
-                        <table className="w-full text-left border-collapse">
-                            <thead className="bg-surface-800/50 text-[10px] font-black uppercase tracking-widest text-surface-200/50">
-                                <tr>
-                                    <th className="p-5 italic">Student</th>
-                                    <th className="p-5 text-right">Total Invoice</th>
-                                    <th className="p-5 text-right">Settled</th>
-                                    <th className="p-5 text-right">Outstanding</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-surface-700/30">
-                                {students.map(s => (
-                                    <tr key={s._id} className="hover:bg-surface-800/10 transition-colors">
-                                        <td className="p-5">
-                                            <p className="text-sm font-black text-white tracking-widest uppercase">{s.name}</p>
-                                            <p className="text-[10px] text-surface-300 opacity-50">{s.phone}</p>
-                                        </td>
-                                        <td className="p-5 text-right text-surface-300 font-bold">₹{s.totalFees.toLocaleString()}</td>
-                                        <td className="p-5 text-right text-success/80 font-black">₹{s.paidFees.toLocaleString()}</td>
-                                        <td className={`p-5 text-right font-black ${s.pendingFees > 0 ? 'text-danger' : 'text-success/50'}`}>₹{s.pendingFees.toLocaleString()}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+            {/* All students fee table */}
+            <section>
+                <p className="section-label">All students</p>
+                <div className="card overflow-hidden">
+                    <div className="flex items-center gap-4 px-6 py-3 text-xs font-semibold text-surface-500 uppercase tracking-wider border-b border-white/[0.05]">
+                        <div className="flex-1">Student</div>
+                        <div className="w-32 text-right">Total</div>
+                        <div className="w-32 text-right">Paid</div>
+                        <div className="w-32 text-right">Pending</div>
                     </div>
+                    {students.length > 0 ? students.map(s => (
+                        <div key={s._id} className="table-row flex items-center gap-4 px-6 py-4">
+                            <div className="flex-1">
+                                <p className="text-[15px] font-medium text-white">{s.name}</p>
+                            </div>
+                            <div className="w-32 text-right text-[15px] text-surface-400">₹{(s.totalFees || 0).toLocaleString()}</div>
+                            <div className="w-32 text-right text-[15px] text-success">₹{(s.paidFees || 0).toLocaleString()}</div>
+                            <div className={`w-32 text-right text-[15px] font-semibold ${(s.pendingFees || 0) > 0 ? 'text-danger' : 'text-surface-600'}`}>
+                                ₹{(s.pendingFees || 0).toLocaleString()}
+                            </div>
+                        </div>
+                    )) : (
+                        <div className="p-12 text-center">
+                            <p className="text-surface-500">No students yet.</p>
+                        </div>
+                    )}
                 </div>
-            </div>
+            </section>
         </div>
     );
 }

@@ -2,119 +2,136 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
 
-function DailyActions() {
-    const [actions, setActions] = useState([]);
-    useEffect(() => {
-        api.get('/actions/daily').then(res => setActions(res.data));
-    }, []);
-
-    if (actions.length === 0) return null;
-
-    return (
-        <div className="glass p-6 rounded-3xl border border-primary-500/20 bg-primary-500/5">
-            <h3 className="text-primary-400 font-black text-lg mb-4 flex items-center gap-2">📌 Today's Actions</h3>
-            <div className="space-y-3">
-                {actions.map((act, i) => (
-                    <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border ${act.priority === 'high' ? 'bg-danger/10 border-danger/20' : 'bg-surface-800 border-white/5'}`}>
-                        <span className="text-2xl">{act.icon}</span>
-                        <p className="text-sm font-bold text-white">{act.text}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-function HighRiskStudents() {
-    const [risk, setRisk] = useState([]);
-    useEffect(() => {
-        api.get('/students/risk').then(res => setRisk(res.data));
-    }, []);
-
-    if (risk.length === 0) return null;
-
-    return (
-        <div className="glass p-6 rounded-3xl border border-danger/20 bg-danger/5">
-            <h3 className="text-danger font-black text-lg mb-4 flex items-center gap-2">⚠️ High Risk Students</h3>
-            <div className="space-y-3">
-                {risk.map(s => (
-                    <div key={s._id} className="flex justify-between items-center p-4 bg-surface-900/50 rounded-2xl border border-white/5">
-                        <div>
-                            <p className="text-white font-black">{s.name}</p>
-                            <div className="flex gap-3 mt-1">
-                                <span className="text-[10px] bg-danger/20 text-danger px-2 py-0.5 rounded font-black uppercase">Att: {s.attendancePrc}%</span>
-                                <span className="text-[10px] bg-warning/20 text-warning px-2 py-0.5 rounded font-black uppercase">Pending: ₹{s.pendingFees}</span>
-                            </div>
-                        </div>
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs ${s.engagementScore > 70 ? 'bg-success/20 text-success' : s.engagementScore > 40 ? 'bg-warning/20 text-warning' : 'bg-danger/20 text-danger'}`}>
-                            {s.engagementScore}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-function ManagementSummary() {
-    const [stats, setStats] = useState({ totalStudents: 0, totalPending: 0, todayAttendance: '0%' });
-    useEffect(() => {
-        const fetchData = async () => {
-            const [students, attendance] = await Promise.all([api.get('/students'), api.get('/attendance')]);
-            const totalPending = students.data.reduce((sum, s) => sum + (s.totalFees - s.paidFees), 0);
-            const today = new Date().toISOString().split('T')[0];
-            const todayRecords = attendance.data.filter(a => a.date.startsWith(today));
-            const present = todayRecords.filter(r => r.status === 'present').length;
-            const attPrc = todayRecords.length > 0 ? Math.round((present / todayRecords.length) * 100) + '%' : 'N/A';
-            setStats({ totalStudents: students.data.length, totalPending, todayAttendance: attPrc });
-        };
-        fetchData();
-    }, []);
-
-    const cards = [
-        { label: 'Total Students', value: stats.totalStudents, icon: '👩‍🎓' },
-        { label: 'Pending Fees', value: `₹${stats.totalPending.toLocaleString()}`, icon: '💸' },
-        { label: "Today's Attendance", value: stats.todayAttendance, icon: '📅' },
-    ];
-
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {cards.map(card => (
-                <div key={card.label} className="glass p-6 rounded-3xl border border-white/5">
-                    <p className="text-surface-200/50 text-[10px] uppercase font-black tracking-widest mb-1">{card.label}</p>
-                    <div className="flex items-center justify-between">
-                        <p className="text-2xl font-black text-white">{card.value}</p>
-                        <span className="text-2xl opacity-50">{card.icon}</span>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
 export default function DashboardPage() {
     const { user } = useAuth();
+    const [briefing, setBriefing] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        api.get('/insights/daily-view')
+            .then(res => setBriefing(res.data))
+            .catch(() => setBriefing(null))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const copyReminder = (s) => {
+        navigator.clipboard.writeText(`Hi ${s.name}, your ₹${s.pendingFees} fees are pending. Please clear it soon.`);
+    };
+
+    if (loading) return (
+        <div className="page flex items-center justify-center min-h-screen">
+            <p className="text-surface-500">Loading today's briefing...</p>
+        </div>
+    );
+
+    const { totalPending = 0, recoveredThisWeek = 0, streak = 0, biggestProblem = {}, analyzedStudents = [] } = briefing || {};
+    const pendingStudents = analyzedStudents.filter(s => (s.pendingFees || 0) > 0);
+    const atRiskStudents = analyzedStudents.filter(s => (s.attendancePrc || 100) < 50);
+
     return (
-        <div className="p-8 space-y-8 min-h-screen">
-            <header>
-                <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Command Center</h1>
-                <p className="text-surface-200/50 font-medium">Hello Coach {user?.name?.split(' ')[0] || 'My Friend'}, here is your priority list.</p>
-            </header>
+        <div className="page animate-in">
 
-            <ManagementSummary />
+            {/* Header */}
+            <div className="mb-12">
+                <h1 className="page-title">Today</h1>
+                <p className="page-subtitle">
+                    {streak > 0
+                        ? `🔥 ${streak}-day streak · Keep going`
+                        : 'Start today to build your streak'
+                    }
+                </p>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
-                    <DailyActions />
-                    <div className="glass p-10 rounded-3xl border border-white/5 text-center bg-surface-900/40">
-                        <div className="text-6xl mb-6">🎯</div>
-                        <h2 className="text-xl font-black text-white uppercase italic">Full Speed Ahead</h2>
-                        <p className="text-surface-200/50 text-sm mt-3 max-w-md mx-auto">Manage your students and track their progress daily to increase retention by up to 40%.</p>
+            {/* Biggest Problem */}
+            {biggestProblem?.type !== 'none' && (
+                <div className="card p-6 mb-10" style={{ borderColor: 'rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.05)' }}>
+                    <div className="flex items-start gap-5">
+                        <div className="w-11 h-11 rounded-xl bg-danger/10 flex items-center justify-center text-danger text-lg flex-shrink-0 mt-0.5">!</div>
+                        <div>
+                            <p className="text-base font-semibold text-white">{biggestProblem.message?.replace(/🔴\s?/, '').replace('Biggest Issue: ', '')}</p>
+                            <p className="text-sm text-surface-400 mt-1.5 leading-relaxed">{biggestProblem.description}</p>
+                        </div>
                     </div>
                 </div>
-                <aside className="space-y-8">
-                    <HighRiskStudents />
-                </aside>
+            )}
+
+            {/* Stats Row */}
+            <div className="flex gap-5 mb-12">
+                <div className="flex-1 card p-8 text-center min-w-0">
+                    <p className="text-sm text-surface-500 mb-2">Pending</p>
+                    <p className="text-3xl font-bold text-white">₹{totalPending.toLocaleString()}</p>
+                </div>
+                <div className="flex-1 card p-8 text-center min-w-0">
+                    <p className="text-sm text-surface-500 mb-2">Recovered</p>
+                    <p className="text-3xl font-bold text-success">₹{recoveredThisWeek.toLocaleString()}</p>
+                </div>
+                <div className="flex-1 card p-8 text-center min-w-0">
+                    <p className="text-sm text-surface-500 mb-2">At Risk</p>
+                    <p className="text-3xl font-bold text-danger">{atRiskStudents.length}</p>
+                </div>
+            </div>
+
+            {/* Fee Collections */}
+            {pendingStudents.length > 0 && (
+                <section className="mb-12">
+                    <p className="section-label">Fee follow-ups</p>
+                    <div className="card overflow-hidden">
+                        {pendingStudents.slice(0, 5).map(s => (
+                            <div key={s._id} className="table-row flex items-center justify-between px-6 py-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-white/[0.07] flex items-center justify-center text-sm font-semibold text-surface-300">
+                                        {s.name?.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="text-[15px] font-medium text-white">{s.name}</p>
+                                        <p className="text-sm text-surface-500">₹{(s.pendingFees || 0).toLocaleString()} pending</p>
+                                    </div>
+                                </div>
+                                <button onClick={() => copyReminder(s)} className="btn btn-ghost">
+                                    Copy reminder
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* At-Risk Students */}
+            {atRiskStudents.length > 0 && (
+                <section className="mb-12">
+                    <p className="section-label">Dropout risk</p>
+                    <div className="card overflow-hidden">
+                        {atRiskStudents.slice(0, 4).map(s => (
+                            <div key={s._id} className="table-row flex items-center justify-between px-6 py-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center text-sm font-semibold text-danger">
+                                        {s.name?.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="text-[15px] font-medium text-white">{s.name}</p>
+                                        <p className="text-sm text-surface-500">{s.attendancePrc}% attendance</p>
+                                    </div>
+                                </div>
+                                <span className="badge badge-red">{s.engagementScore} score</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* Empty state */}
+            {pendingStudents.length === 0 && atRiskStudents.length === 0 && (
+                <div className="card p-16 text-center mb-10">
+                    <p className="text-surface-300 text-base font-medium mb-2">All clear today</p>
+                    <p className="text-surface-500 text-sm">No urgent actions needed. Keep marking attendance daily.</p>
+                </div>
+            )}
+
+            {/* Tip */}
+            <div className="card p-5" style={{ background: 'rgba(99,102,241,0.05)', borderColor: 'rgba(99,102,241,0.12)' }}>
+                <p className="text-sm text-surface-400 leading-relaxed">
+                    <span className="text-primary-400 font-semibold">Tip:</span> Following up on the first missed day triples retention. Check attendance → call absent students → protect your revenue.
+                </p>
             </div>
         </div>
     );

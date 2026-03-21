@@ -15,10 +15,14 @@ router.get('/students', auth, async (req, res) => {
 
 router.get('/students/risk', auth, async (req, res) => {
     try {
-        const rawStudents = await Student.find({ userId: req.userId }).populate('batchId');
+        const { batchId } = req.query;
+        let query = { userId: req.userId };
+        if (batchId) query.batchId = batchId;
+
+        const rawStudents = await Student.find(query).populate('batchId');
         const students = await calculateStudentStats(rawStudents, req.userId);
         const riskStudents = students
-            .filter(s => s.attendancePrc < 50 && s.pendingFees > 0)
+            .filter(s => s.attendancePrc < 50 && (s.totalFees - s.paidFees) > 0)
             .sort((a, b) => a.engagementScore - b.engagementScore)
             .slice(0, 5);
         res.json(riskStudents);

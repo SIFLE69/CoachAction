@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import api from '../api';
 
 export default function AttendancePage() {
-    const [view, setView] = useState('mark'); // 'mark' or 'history'
+    const [view, setView] = useState('mark');
     const [batches, setBatches] = useState([]);
     const [selectedBatch, setSelectedBatch] = useState('');
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(false);
-
-    // History specific
     const [histDate, setHistDate] = useState(new Date().toISOString().split('T')[0]);
     const [history, setHistory] = useState([]);
 
@@ -44,21 +42,29 @@ export default function AttendancePage() {
     };
 
     return (
-        <div className="p-8">
-            <div className="flex justify-between items-center mb-10">
-                <h1 className="text-2xl font-black text-white uppercase tracking-widest">Attendance Center</h1>
-                <div className="flex bg-surface-900 p-1 rounded-xl border border-white/5">
-                    <button onClick={() => setView('mark')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${view === 'mark' ? 'bg-primary-600 text-white shadow-lg' : 'text-surface-200/50 hover:text-white'}`}>Mark Daily</button>
-                    <button onClick={() => setView('history')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${view === 'history' ? 'bg-primary-600 text-white shadow-lg' : 'text-surface-200/50 hover:text-white'}`}>View History</button>
+        <div className="page animate-in">
+            <div className="flex items-center justify-between mb-10">
+                <div>
+                    <h1 className="page-title">Attendance</h1>
+                    <p className="page-subtitle">Mark daily or view past records</p>
+                </div>
+                <div className="flex p-1.5 rounded-xl border border-white/[0.08]" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                    <button onClick={() => setView('mark')} className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-smooth ${view === 'mark' ? 'bg-primary-600 text-white' : 'text-surface-400 hover:text-white'}`}>Mark</button>
+                    <button onClick={() => setView('history')} className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-smooth ${view === 'history' ? 'bg-primary-600 text-white' : 'text-surface-400 hover:text-white'}`}>History</button>
                 </div>
             </div>
 
-            <div className="mb-8">
-                <label className="block text-xs text-surface-200/50 mb-3 uppercase tracking-wider font-black">Choose Batch</label>
+            {/* Batch Selection */}
+            <div className="mb-10">
+                <p className="section-label">Select batch</p>
                 <div className="flex flex-wrap gap-3">
                     {batches.map(b => (
                         <button key={b._id} onClick={() => handleBatchSelect(b._id)}
-                            className={`px-6 py-3 rounded-2xl font-bold transition-all border ${selectedBatch === b._id ? 'bg-primary-600 border-primary-500 shadow-xl shadow-primary-600/20 text-white' : 'bg-surface-800 border-white/5 text-surface-300 hover:border-white/20'}`}>
+                            className={`px-5 py-3 rounded-xl text-sm font-semibold transition-smooth border ${selectedBatch === b._id
+                                ? 'bg-primary-600 border-primary-600 text-white'
+                                : 'border-white/[0.08] text-surface-400 hover:text-white hover:border-white/[0.15]'
+                                }`}
+                            style={selectedBatch !== b._id ? { background: 'rgba(255,255,255,0.04)' } : {}}>
                             {b.name}
                         </button>
                     ))}
@@ -66,77 +72,66 @@ export default function AttendancePage() {
             </div>
 
             {view === 'mark' ? (
-                selectedBatch && (
-                    <div className="animate-fade-in-up">
-                        <div className="glass rounded-3xl overflow-hidden mb-6 border border-white/5">
-                            <table className="w-full text-left">
-                                <thead className="bg-surface-800/50 text-surface-200/50 text-xs uppercase font-black">
-                                    <tr>
-                                        <th className="p-5">Student</th>
-                                        <th className="p-5 text-center">Mark Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-surface-700/30">
-                                    {students.map((s, i) => (
-                                        <tr key={s._id} className="hover:bg-surface-800/10 transition-colors">
-                                            <td className="p-5 text-white font-bold">{s.name}</td>
-                                            <td className="p-5">
-                                                <div className="flex justify-center gap-3">
-                                                    <button onClick={() => {
-                                                        const newS = [...students]; newS[i].status = 'present'; setStudents(newS);
-                                                    }} className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${s.status === 'present' ? 'bg-success text-white shadow-lg shadow-success/20 scale-105' : 'bg-surface-800 text-surface-400'}`}>Present</button>
-                                                    <button onClick={() => {
-                                                        const newS = [...students]; newS[i].status = 'absent'; setStudents(newS);
-                                                    }} className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${s.status === 'absent' ? 'bg-danger text-white shadow-lg shadow-danger/20 scale-105' : 'bg-surface-800 text-surface-400'}`}>Absent</button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                selectedBatch ? (
+                    <div className="animate-in">
+                        <div className="card overflow-hidden mb-8">
+                            {students.map((s, i) => (
+                                <div key={s._id} className="table-row flex items-center justify-between px-6 py-5">
+                                    <div className="flex-1 flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-white/[0.07] flex items-center justify-center text-base font-semibold text-surface-300">
+                                            {s.name?.charAt(0)}
+                                        </div>
+                                        <p className="text-lg font-semibold text-white">{s.name}</p>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <button
+                                            onClick={() => { const n = [...students]; n[i].status = 'present'; setStudents(n); }}
+                                            className={`px-6 py-3 rounded-xl text-[15px] font-bold transition-smooth ${s.status === 'present' ? 'bg-success/20 text-success' : 'bg-white/[0.04] text-surface-500 hover:text-surface-300'}`}
+                                        >
+                                            Present
+                                        </button>
+                                        <button
+                                            onClick={() => { const n = [...students]; n[i].status = 'absent'; setStudents(n); }}
+                                            className={`px-6 py-3 rounded-xl text-[15px] font-bold transition-smooth ${s.status === 'absent' ? 'bg-danger/20 text-danger' : 'bg-white/[0.04] text-surface-500 hover:text-surface-300'}`}
+                                        >
+                                            Absent
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <button onClick={markAttendance} disabled={loading} className="w-full bg-primary-600 py-5 rounded-2xl font-black text-white shadow-2xl shadow-primary-600/30 hover:bg-primary-500 transition-all uppercase tracking-widest">
-                            {loading ? 'Processing...' : 'Submit Attendance for Today'}
+                        <button onClick={markAttendance} disabled={loading} className="btn btn-primary w-full py-4 text-base">
+                            {loading ? 'Saving...' : 'Submit attendance'}
                         </button>
+                    </div>
+                ) : (
+                    <div className="card p-16 text-center">
+                        <p className="text-surface-400">Select a batch above to start marking.</p>
                     </div>
                 )
             ) : (
-                <div className="animate-fade-in">
-                    <div className="mb-6 flex items-end gap-4">
-                        <div className="flex-1 max-w-xs">
-                            <label className="block text-xs text-surface-200/50 mb-2 uppercase font-black">Record Date</label>
-                            <input type="date" value={histDate} onChange={e => setHistDate(e.target.value)} className="w-full bg-surface-900 border border-white/10 rounded-xl p-3 text-white focus:border-primary-500 outline-none" />
-                        </div>
+                <div className="animate-in">
+                    <div className="mb-8">
+                        <label className="text-sm text-surface-500 mb-2 block">Date</label>
+                        <input type="date" value={histDate} onChange={e => setHistDate(e.target.value)} className="input max-w-xs" />
                     </div>
 
                     {selectedBatch ? (
-                        <div className="glass rounded-3xl overflow-hidden border border-white/5">
-                            <table className="w-full text-left">
-                                <thead className="bg-surface-800/50 text-surface-200/50 text-xs uppercase font-black">
-                                    <tr>
-                                        <th className="p-5">Student</th>
-                                        <th className="p-5 text-center">Historical Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-surface-700/30">
-                                    {history.length > 0 ? history.map(h => (
-                                        <tr key={h._id}>
-                                            <td className="p-5 text-white font-bold">{h.studentId?.name}</td>
-                                            <td className="p-5 text-center">
-                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter ${h.status === 'present' ? 'bg-success/20 text-success border border-success/20' : 'bg-danger/20 text-danger border border-danger/20'}`}>
-                                                    {h.status}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    )) : (
-                                        <tr><td colSpan="2" className="p-10 text-center text-surface-200/50 italic text-sm">No historical records found for this batch on {histDate}</td></tr>
-                                    )}
-                                </tbody>
-                            </table>
+                        <div className="card overflow-hidden">
+                            {history.length > 0 ? history.map(h => (
+                                <div key={h._id} className="table-row flex items-center justify-between px-6 py-4">
+                                    <p className="text-[15px] font-medium text-white">{h.studentId?.name}</p>
+                                    <span className={`badge ${h.status === 'present' ? 'badge-green' : 'badge-red'}`}>{h.status}</span>
+                                </div>
+                            )) : (
+                                <div className="p-12 text-center">
+                                    <p className="text-surface-500">No records for this date.</p>
+                                </div>
+                            )}
                         </div>
                     ) : (
-                        <div className="text-center p-10 bg-surface-900 rounded-3xl border border-dashed border-white/5">
-                            <p className="text-surface-200/50">Select a batch above to view history</p>
+                        <div className="card p-16 text-center">
+                            <p className="text-surface-400">Select a batch to view history.</p>
                         </div>
                     )}
                 </div>

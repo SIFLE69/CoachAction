@@ -10,6 +10,7 @@ const paymentRoutes = require('./payments');
 const actionRoutes = require('./actions');
 const insightRoutes = require('./insights');
 const dataRoutes = require('./data');
+const dailyRoutes = require('./daily');
 
 // Mount them specifically
 router.use(authRoutes);
@@ -20,5 +21,6 @@ router.use(paymentRoutes);
 router.use(actionRoutes);
 router.use(insightRoutes);
 router.use(dataRoutes);
+router.use(dailyRoutes);
 
 module.exports = router;

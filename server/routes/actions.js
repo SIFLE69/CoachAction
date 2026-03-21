@@ -8,7 +8,11 @@ const router = express.Router();
 
 router.get('/actions/daily', auth, async (req, res) => {
     try {
-        const students = await Student.find({ userId: req.userId });
+        const { batchId } = req.query;
+        let query = { userId: req.userId };
+        if (batchId) query.batchId = batchId;
+
+        const students = await Student.find(query);
         const analyzed = await calculateStudentStats(students, req.userId);
 
         let actions = [];
