@@ -3,35 +3,28 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-const authRoutes = require('./routes/auth');
-const dataRoutes = require('./routes/data');
-const insightsRoutes = require('./routes/insights');
-const actionsRoutes = require('./routes/actions');
+const apiRouter = require('./routes/api');
 
 const app = express();
-
-// Middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
+app.use(cors());
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/data', dataRoutes);
-app.use('/api/insights', insightsRoutes);
-app.use('/api/actions', actionsRoutes);
+// Mount the unified API router
+app.use('/api', apiRouter);
 
-// Health check
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+// Health Check
+app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
 
-// Connect to MongoDB & start server
-const PORT = process.env.PORT || 5000;
-mongoose
-    .connect(process.env.MONGO_URI)
+// Catch-all-404 Logger
+app.use((req, res) => {
+    console.log(`[404] ${req.method} ${req.url}`);
+    res.status(404).json({ error: 'Route not found' });
+});
+
+mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB connected');
+        const PORT = process.env.PORT || 5000;
         app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
     })
-    .catch((err) => {
-        console.error('❌ MongoDB connection error:', err.message);
-        process.exit(1);
-    });
+    .catch(err => console.log('❌ DB Error:', err));
