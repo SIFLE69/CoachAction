@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/api',
+    // Prioritize Cloud API URL, fallback to local proxy for development
+    baseURL: import.meta.env.VITE_API_URL || '/api',
     headers: { 'Content-Type': 'application/json' },
 });
 
