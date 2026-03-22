@@ -9,27 +9,27 @@ export default function Modal({ isOpen, onClose, title, children, footer }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 fade-in">
             <div
-                className="absolute inset-0 bg-black/20 dark:bg-black/60 backdrop-blur-[2px]"
+                className="absolute inset-0 bg-black/20 dark:bg-black/60 backdrop-blur-sm"
                 onClick={onClose}
             />
-            <div className="relative card w-full max-w-md p-6 bg-[var(--bg-card)] border-[var(--border-main)] shadow-2xl">
+            <div className="relative card scale-in w-full max-w-md p-8 bg-[var(--bg-card)] border-[var(--border-main)] shadow-2xl">
                 {title && (
-                    <div className="mb-4">
-                        <h3 className="text-[17px] font-bold tracking-tight text-[var(--text-main)]">
+                    <div className="mb-6">
+                        <h3 className="section-title">
                             {title}
                         </h3>
                     </div>
                 )}
 
-                <div className="text-[13.5px] text-[var(--text-muted)] leading-relaxed mb-6">
+                <div className="text-[14px] text-[var(--text-muted)] leading-relaxed mb-8">
                     {children}
                 </div>
 
-                <div className="flex gap-3 justify-end pt-2">
+                <div className="flex gap-4 justify-end">
                     {footer || (
-                        <button onClick={onClose} className="btn btn-ghost h-9 px-6 text-[13px]">
+                        <button onClick={onClose} className="btn btn-ghost h-10 px-8 text-[13px]">
                             Dismiss
                         </button>
                     )}

@@ -98,11 +98,12 @@ export default function StudentsPage() {
                         <input
                             type="text"
                             placeholder="Find students..."
-                            className="input w-full md:w-64 pl-10 h-10"
+                            className="input w-full md:w-64 h-10"
+                            style={{ paddingLeft: '3.5rem' }}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-primary-600 transition-colors">
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-primary-600 transition-colors">
                             <Icons.Search />
                         </span>
                     </div>
@@ -172,7 +173,11 @@ export default function StudentsPage() {
                     {filteredStudents.map((s, idx) => {
                         const id = s._id || s.id;
                         return (
-                            <div key={id || `student-${idx}`} className="border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors">
+                            <div
+                                key={id || `student-${idx}`}
+                                className="border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors animate-in"
+                                style={{ animationDelay: `${idx * 40}ms`, opacity: 0 }}
+                            >
                                 <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6 px-4 md:px-6 py-4">
                                     <div className="flex-1 flex items-center gap-3 md:gap-4 min-w-0">
                                         <div className="w-10 h-10 rounded-lg bg-primary-600/5 flex items-center justify-center text-xs font-bold text-primary-600 flex-shrink-0">
@@ -218,7 +223,7 @@ export default function StudentsPage() {
                                     </div>
                                 </div>
                                 {expandedStudent === id && (
-                                    <div className="px-4 md:px-6 pb-6 pt-2 animate-in overflow-hidden">
+                                    <div className="px-4 md:px-6 pb-6 pt-2 fade-in overflow-hidden">
                                         <div className="bg-[var(--bg-main)]/50 rounded-xl p-4 md:p-6 border border-[var(--border-main)] overflow-x-auto">
                                             <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4">Historical Engagement</p>
                                             <div className="min-w-[500px]">

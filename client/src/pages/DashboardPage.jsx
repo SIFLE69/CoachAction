@@ -127,24 +127,28 @@ export default function DashboardPage() {
                     <p className="text-xl md:text-2xl font-bold tracking-tight">{metrics?.inquiries || 0}</p>
                 </div>
                 <div className="card p-4 md:p-6">
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Optimization Point</p>
-                    <p className="text-xl md:text-2xl font-bold text-primary-600 tracking-tight">{leaks.length > 0 ? 'Active' : 'Neutral'}</p>
+                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Monthly Revenue</p>
+                    <p className="text-xl md:text-2xl font-bold text-success tracking-tight">{formatCurrency(metrics?.revenue || 0)}</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
                 <div className="lg:col-span-2 space-y-12">
                     {/* Collections Table */}
-                    <section>
-                        <div className="flex items-center justify-between mb-4 px-1">
-                            <p className="section-label mb-0">Urgent Receivables</p>
+                    <section className="animate-in" style={{ animationDelay: '100ms', opacity: 0 }}>
+                        <div className="flex items-center justify-between mb-6 px-1">
+                            <p className="section-title mb-0">Urgent Receivables</p>
                             <p className="text-[11px] font-bold text-[var(--text-muted)]">{pendingStudents.length} Students</p>
                         </div>
                         {pendingStudents.length > 0 ? (
                             <div className="card shadow-sm overflow-x-auto">
                                 <div className="min-w-[400px]">
-                                    {pendingStudents.slice(0, 5).map(s => (
-                                        <div key={s._id} className="table-row px-4 md:px-6">
+                                    {pendingStudents.slice(0, 5).map((s, idx) => (
+                                        <div
+                                            key={s._id}
+                                            className="table-row px-4 md:px-6 animate-in"
+                                            style={{ animationDelay: `${idx * 50}ms`, opacity: 0 }}
+                                        >
                                             <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                                                 <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-[var(--border-subtle)] flex items-center justify-center text-[10px] md:text-xs font-bold text-[var(--text-muted)] flex-shrink-0">
                                                     {s.name?.charAt(0)}
@@ -193,14 +197,18 @@ export default function DashboardPage() {
                     </section>
                 </div>
 
-                {/* Secondary Sidebar for Insights */}
-                <aside className="space-y-8">
+                {/* Growth/Leaks Sidebar */}
+                <div className="space-y-12 animate-in" style={{ animationDelay: '200ms', opacity: 0 }}>
                     {leaks.length > 0 && (
                         <section>
-                            <p className="section-label">Operational Leaks</p>
+                            <p className="section-title mb-6">Operational Leaks</p>
                             <div className="space-y-4">
                                 {leaks.slice(0, 3).map((leak, idx) => (
-                                    <div key={idx} className="card p-5 border-l-2 border-l-danger/30 shadow-sm">
+                                    <div
+                                        key={idx}
+                                        className="card p-5 border-l-2 border-l-danger/30 shadow-sm animate-in"
+                                        style={{ animationDelay: `${(idx + 5) * 50}ms`, opacity: 0 }}
+                                    >
                                         <p className="text-[13px] font-bold text-[var(--text-main)] mb-1">{leak.message}</p>
                                         <p className="text-[12px] text-[var(--text-muted)] leading-normal">{leak.fix}</p>
                                     </div>
@@ -208,7 +216,7 @@ export default function DashboardPage() {
                             </div>
                         </section>
                     )}
-                </aside>
+                </div>
             </div>
         </div>
     );

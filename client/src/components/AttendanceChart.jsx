@@ -10,7 +10,7 @@ export default function AttendanceChart({ data }) {
     }
 
     return (
-        <div className="h-48 w-full">
+        <div className="h-48 w-full fade-in">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data}>
                     <defs>
@@ -21,25 +21,29 @@ export default function AttendanceChart({ data }) {
                     </defs>
                     <XAxis
                         dataKey="date"
-                        stroke="rgba(255,255,255,0.08)"
+                        stroke="rgba(0,0,0,0.05)"
                         fontSize={10}
                         tickFormatter={str => str.split('-').slice(1).join('/')}
                         tick={{ fill: '#737373' }}
+                        axisLine={false}
+                        tickLine={false}
                     />
                     <YAxis
-                        stroke="rgba(255,255,255,0.08)"
+                        stroke="rgba(0,0,0,0.05)"
                         fontSize={10}
                         domain={[0, 100]}
                         tickFormatter={val => `${val}%`}
                         tick={{ fill: '#737373' }}
+                        axisLine={false}
+                        tickLine={false}
                     />
                     <Tooltip
                         contentStyle={{
-                            background: '#171717',
-                            border: '1px solid rgba(255,255,255,0.06)',
-                            borderRadius: '8px',
+                            background: 'var(--bg-card)',
+                            border: '1px solid var(--border-main)',
+                            borderRadius: '12px',
                             fontSize: '12px',
-                            color: '#e5e5e5'
+                            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
                         }}
                     />
                     <Area
@@ -50,6 +54,7 @@ export default function AttendanceChart({ data }) {
                         fillOpacity={1}
                         fill="url(#colorAtt)"
                         name="Attendance"
+                        animationDuration={1200}
                     />
                 </AreaChart>
             </ResponsiveContainer>

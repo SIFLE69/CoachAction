@@ -25,39 +25,39 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="min-h-screen flex items-center justify-center px-6 bg-[var(--bg-main)]">
             <div className="w-full max-w-sm animate-in">
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-2.5 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white text-sm font-bold">C</div>
-                        <span className="text-lg font-semibold text-white tracking-tight">CoachAction</span>
+                    <div className="inline-flex items-center gap-3 mb-4">
+                        <div className="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white text-base font-bold shadow-lg">C</div>
+                        <span className="text-2xl font-semibold text-[var(--text-main)] tracking-tight">CoachAction</span>
                     </div>
-                    <p className="text-surface-500 text-sm">Sign in to your account</p>
+                    <p className="text-[var(--text-muted)] text-sm font-medium">Elevating your strategic management</p>
                 </div>
 
-                <div className="card p-6">
+                <div className="card p-8 scale-in shadow-2xl border-[var(--border-main)]">
                     {error && (
-                        <div className="mb-4 p-3 rounded-lg text-sm" style={{ background: 'rgba(239,68,68,0.08)', color: '#f87171' }}>
+                        <div className="mb-6 p-4 rounded-xl text-[13px] font-medium animate-in" style={{ background: 'rgba(239,68,68,0.08)', color: '#ef4444' }}>
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="text-xs text-surface-500 mb-1.5 block">Email</label>
-                            <input id="login-email" type="email" value={email} onChange={e => setEmail(e.target.value)} className="input" placeholder="you@example.com" required />
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest ml-1">Account Email</label>
+                            <input id="login-email" type="email" value={email} onChange={e => setEmail(e.target.value)} className="input h-11" placeholder="you@office.com" required />
                         </div>
-                        <div>
-                            <label className="text-xs text-surface-500 mb-1.5 block">Password</label>
-                            <input id="login-password" type="password" value={password} onChange={e => setPassword(e.target.value)} className="input" placeholder="••••••••" required minLength={6} />
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest ml-1">Security Key</label>
+                            <input id="login-password" type="password" value={password} onChange={e => setPassword(e.target.value)} className="input h-11" placeholder="••••••••" required minLength={6} />
                         </div>
-                        <button type="submit" disabled={loading} className="btn btn-primary w-full py-2.5 mt-2 disabled:opacity-50">
-                            {loading ? 'Signing in...' : 'Sign in'}
+                        <button type="submit" disabled={loading} className="btn btn-primary w-full h-11 mt-4 shadow-lg disabled:opacity-50">
+                            {loading ? 'Authenticating...' : 'Sign In'}
                         </button>
                     </form>
 
-                    <p className="text-center text-sm text-surface-500 mt-5">
-                        No account? <Link to="/signup" className="text-primary-400 font-medium hover:text-primary-300 transition-smooth">Create one</Link>
+                    <p className="text-center text-sm text-[var(--text-muted)] mt-8 font-medium">
+                        New administrator? <Link to="/signup" className="text-primary-600 font-bold hover:underline transition-all">Request access</Link>
                     </p>
                 </div>
             </div>
