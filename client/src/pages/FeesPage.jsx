@@ -132,44 +132,46 @@ export default function FeesPage() {
 
                     {/* Master Ledger List */}
                     <section>
-                        <p className="section-label mb-6">Aggregate Financial Ledger</p>
-                        <div className="card shadow-sm">
-                            <div className="table-header hidden lg:flex">
-                                <div className="flex-1">Account Holder</div>
-                                <div className="w-32 text-right">Commitment</div>
-                                <div className="w-32 text-right">Recognized</div>
-                                <div className="w-32 text-right">Balance</div>
-                            </div>
-                            {students.length > 0 ? students.map(s => (
-                                <div key={s._id} className="table-row flex-col lg:flex-row lg:items-center">
-                                    <div className="flex-1">
-                                        <p className="text-[14px] font-bold tracking-tight">{s.name}</p>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
-                                            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tight">Verified Account</p>
+                        <p className="section-label mb-6 px-1">Aggregate Financial Ledger</p>
+                        <div className="card shadow-sm overflow-x-auto">
+                            <div className="min-w-[800px]">
+                                <div className="hidden lg:flex table-header">
+                                    <div className="flex-1">Account Holder</div>
+                                    <div className="w-32 text-right">Commitment</div>
+                                    <div className="w-32 text-right">Recognized</div>
+                                    <div className="w-32 text-right">Balance</div>
+                                </div>
+                                {students.length > 0 ? students.map(s => (
+                                    <div key={s._id} className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-0 px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[14px] font-bold tracking-tight truncate">{s.name}</p>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                                <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tight">Verified Account</p>
+                                            </div>
+                                        </div>
+                                        <div className="w-full lg:w-32 text-left lg:text-right shrink-0">
+                                            <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1 tracking-tighter">Total</p>
+                                            <p className="text-[13px] font-medium text-[var(--text-muted)]">{formatCurrency(s.totalFees || 0)}</p>
+                                        </div>
+                                        <div className="w-full lg:w-32 text-left lg:text-right shrink-0">
+                                            <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1 tracking-tighter">Paid</p>
+                                            <p className="text-[14px] font-bold text-success">{formatCurrency(s.paidFees || 0)}</p>
+                                        </div>
+                                        <div className="w-full lg:w-32 text-left lg:text-right shrink-0">
+                                            <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1 tracking-tighter">Pending</p>
+                                            <p className={`text-[15px] font-bold tracking-tight ${(s.pendingFees || 0) > 0 ? 'text-danger' : 'text-[var(--text-muted)] opacity-40'}`}>
+                                                {formatCurrency(s.pendingFees || 0)}
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="w-full lg:w-32 text-left lg:text-right">
-                                        <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1">Total</p>
-                                        <p className="text-[13px] font-medium text-[var(--text-muted)]">{formatCurrency(s.totalFees || 0)}</p>
+                                )) : (
+                                    <div className="py-32 text-center bg-[var(--border-subtle)] border-dashed">
+                                        <div className="flex justify-center mb-6"><Icons.FileText /></div>
+                                        <p className="text-[14px] font-bold text-[var(--text-muted)]">No active financial records identified.</p>
                                     </div>
-                                    <div className="w-full lg:w-32 text-left lg:text-right">
-                                        <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1">Paid</p>
-                                        <p className="text-[14px] font-bold text-success">{formatCurrency(s.paidFees || 0)}</p>
-                                    </div>
-                                    <div className="w-full lg:w-32 text-left lg:text-right">
-                                        <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1">Pending</p>
-                                        <p className={`text-[15px] font-bold tracking-tight ${(s.pendingFees || 0) > 0 ? 'text-danger' : 'text-[var(--text-muted)] opacity-40'}`}>
-                                            {formatCurrency(s.pendingFees || 0)}
-                                        </p>
-                                    </div>
-                                </div>
-                            )) : (
-                                <div className="py-32 text-center bg-[var(--border-subtle)] border-dashed">
-                                    <div className="flex justify-center mb-6"><Icons.FileText /></div>
-                                    <p className="text-[14px] font-bold text-[var(--text-muted)]">No active financial records identified.</p>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </section>
                 </div>
@@ -177,5 +179,3 @@ export default function FeesPage() {
         </div>
     );
 }
-
-

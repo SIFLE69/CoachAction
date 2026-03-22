@@ -104,57 +104,55 @@ export default function BatchesPage() {
                 </div>
             ) : (
                 <>
-                    <p className="section-label mb-6">Cohort Performance Metrics</p>
-                    <div className="card shadow-sm">
-                        <div className="hidden lg:flex table-header">
-                            <div className="flex-1">Group Details</div>
-                            <div className="w-32 text-center">Enrolled</div>
-                            <div className="w-32 text-center">Attendance Avg</div>
-                            <div className="w-40 text-right">Batch Revenue</div>
-                            <div className="w-20"></div>
-                        </div>
-                        {(performance || []).map((b, idx) => {
-                            // Robust ID resolution: try multiple common patterns
-                            const id = b._id || b.id || b.batchId;
+                    <p className="section-label mb-6 px-1">Cohort Performance Metrics</p>
+                    <div className="card shadow-sm overflow-x-auto">
+                        <div className="min-w-[800px]">
+                            <div className="hidden lg:flex table-header">
+                                <div className="flex-1">Group Details</div>
+                                <div className="w-32 text-center">Enrolled</div>
+                                <div className="w-32 text-center">Attendance Avg</div>
+                                <div className="w-40 text-right">Batch Revenue</div>
+                                <div className="w-20"></div>
+                            </div>
+                            {(performance || []).map((b, idx) => {
+                                // Robust ID resolution
+                                const id = b._id || b.id || b.batchId;
+                                const resolvedId = id || (batches.find(bx => bx.name === b.name)?._id);
 
-                            // Last resort: if performance object is missing ID (e.g. aggregate error),
-                            // try to find the matching entry in the batches array by name
-                            const resolvedId = id || (batches.find(bx => bx.name === b.name)?._id);
-
-                            return (
-                                <div key={resolvedId || `batch-${idx}`} className="table-row group">
-                                    <div className="flex-1">
-                                        <p className="text-[15px] font-bold tracking-tight">{b.name}</p>
-                                        <div className="flex items-center gap-1.5 mt-0.5 text-[var(--text-muted)]">
-                                            <Icons.Clock />
-                                            <p className="text-[11px] font-medium pt-0.5">{b.timing}</p>
+                                return (
+                                    <div key={resolvedId || `batch-${idx}`} className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-0 px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 group hover:bg-[var(--bg-main)]/50 transition-colors">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[15px] font-bold tracking-tight truncate">{b.name}</p>
+                                            <div className="flex items-center gap-1.5 mt-0.5 text-[var(--text-muted)]">
+                                                <Icons.Clock />
+                                                <p className="text-[11px] font-medium pt-0.5 truncate">{b.timing}</p>
+                                            </div>
+                                        </div>
+                                        <div className="w-full lg:w-32 text-left lg:text-center shrink-0">
+                                            <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1 tracking-tighter">Students</p>
+                                            <p className="text-[13px] font-bold">{b.studentCount} active</p>
+                                        </div>
+                                        <div className="w-full lg:w-32 text-left lg:text-center shrink-0">
+                                            <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1 tracking-tighter">Attendance</p>
+                                            <span className={`text-[11px] font-black px-2.5 py-1 rounded-sm ${b.avgAttendance > 70 ? 'bg-success/5 text-success' : 'bg-danger/5 text-danger'}`}>{b.avgAttendance}%</span>
+                                        </div>
+                                        <div className="w-full lg:w-40 text-left lg:text-right shrink-0">
+                                            <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1 tracking-tighter">Revenue</p>
+                                            <p className="text-[15px] font-bold text-success tracking-tight">{formatCurrency(b.revenue)}</p>
+                                        </div>
+                                        <div className="w-full lg:w-20 text-right shrink-0 flex justify-start lg:justify-end">
+                                            <button
+                                                onClick={() => setDeleteModal({ isOpen: true, batchId: resolvedId, batchName: b.name })}
+                                                className="h-8 w-8 rounded bg-danger/[0.03] text-danger flex items-center justify-center hover:bg-danger hover:text-white transition-colors lg:opacity-0 lg:group-hover:opacity-100"
+                                                title="Delete batch"
+                                            >
+                                                <Icons.Trash />
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="w-32 text-left lg:text-center shrink-0">
-                                        <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1">Students</p>
-                                        <p className="text-[13px] font-bold">{b.studentCount} active</p>
-                                    </div>
-                                    <div className="w-32 text-left lg:text-center shrink-0">
-                                        <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1">Attendance</p>
-                                        <span className={`text-[11px] font-black px-2.5 py-1 rounded-sm ${b.avgAttendance > 70 ? 'bg-success/5 text-success' : 'bg-danger/5 text-danger'}`}>{b.avgAttendance}%</span>
-                                    </div>
-                                    <div className="w-40 text-left lg:text-right shrink-0">
-                                        <p className="text-[10px] font-bold text-[var(--text-muted)] lg:hidden uppercase mb-1">Revenue</p>
-                                        <p className="text-[15px] font-bold text-success tracking-tight">{formatCurrency(b.revenue)}</p>
-                                    </div>
-                                    <div className="w-20 text-right">
-                                        <button
-                                            onClick={() => setDeleteModal({ isOpen: true, batchId: resolvedId, batchName: b.name })}
-                                            className="h-8 w-8 rounded bg-danger/[0.03] text-danger flex items-center justify-center hover:bg-danger hover:text-white transition-colors opacity-0 group-hover:opacity-100"
-                                            title="Delete batch"
-                                        >
-                                            <Icons.Trash />
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })}
-
+                                );
+                            })}
+                        </div>
                     </div>
                 </>
             )}

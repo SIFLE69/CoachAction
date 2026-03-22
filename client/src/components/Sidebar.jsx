@@ -14,7 +14,7 @@ const Icons = {
 
 export default function Sidebar() {
     const { logout, user } = useAuth();
-    const { instituteName } = useUI();
+    const { instituteName, sidebarOpen, setSidebarOpen } = useUI();
     const location = useLocation();
 
     const navItems = [
@@ -26,50 +26,72 @@ export default function Sidebar() {
         { path: '/settings', label: 'Settings', Icon: Icons.Settings },
     ];
 
+    const closeSidebarOnMobile = () => {
+        if (window.innerWidth < 1024) setSidebarOpen(false);
+    };
+
     return (
-        <aside className="w-64 min-h-screen bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] flex flex-col sticky top-0 z-50">
-            <div className="p-6">
-                <div className="flex items-center gap-3 mb-10 px-2">
-                    <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-black text-sm">C</div>
-                    <p className="text-lg font-bold tracking-tight truncate">{instituteName}</p>
-                </div>
+        <>
+            {/* Mobile Backdrop */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[100] lg:hidden animate-in"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
 
-                <nav className="flex flex-col gap-1">
-                    {navItems.map(({ path, label, Icon }) => {
-                        const isActive = location.pathname === path;
-                        return (
-                            <Link
-                                key={path}
-                                to={path}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${isActive
-                                    ? 'bg-[var(--border-subtle)] text-[var(--text-main)] shadow-sm'
-                                    : 'text-[var(--text-muted)] hover:bg-[var(--border-subtle)] hover:text-[var(--text-main)]'
-                                    }`}
-                            >
-                                <span className={`${isActive ? 'text-primary-600' : 'text-[var(--text-muted)] group-hover:text-[var(--text-main)]'}`}>
-                                    <Icon />
-                                </span>
-                                <span className="text-[13.5px] font-medium tracking-tight">{label}</span>
-                            </Link>
-                        );
-                    })}
-                </nav>
-            </div>
+            <aside className={`fixed lg:sticky top-0 left-0 h-screen bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] flex flex-col z-[101] transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-64 max-w-[80vw]' : 'w-0 lg:w-64 overflow-hidden lg:overflow-visible opacity-0 lg:opacity-100'}`}>
+                <div className="flex-1 flex flex-col min-w-[256px]">
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-10 px-2">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-black text-sm shadow-md">C</div>
+                                <p className="text-lg font-bold tracking-tight truncate">{instituteName}</p>
+                            </div>
+                            <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 rounded-md hover:bg-[var(--border-subtle)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18" /><line x1="6" x2="18" y1="6" y2="18" /></svg>
+                            </button>
+                        </div>
 
-            <div className="mt-auto p-6 space-y-4">
-                <div className="px-4 py-3 rounded-lg bg-[var(--border-subtle)] border border-[var(--border-main)]">
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Session</p>
-                    <p className="text-sm font-bold truncate">{user?.username || 'Teacher'}</p>
+                        <nav className="flex flex-col gap-1">
+                            {navItems.map(({ path, label, Icon }) => {
+                                const isActive = location.pathname === path;
+                                return (
+                                    <Link
+                                        key={path}
+                                        to={path}
+                                        onClick={closeSidebarOnMobile}
+                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${isActive
+                                            ? 'bg-[var(--border-subtle)] text-[var(--text-main)] shadow-sm'
+                                            : 'text-[var(--text-muted)] hover:bg-[var(--border-subtle)] hover:text-[var(--text-main)]'
+                                            }`}
+                                    >
+                                        <span className={`${isActive ? 'text-primary-600' : 'text-[var(--text-muted)] group-hover:text-[var(--text-main)]'}`}>
+                                            <Icon />
+                                        </span>
+                                        <span className="text-[13.5px] font-medium tracking-tight">{label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </nav>
+                    </div>
+
+                    <div className="mt-auto p-6 space-y-4">
+                        <div className="px-4 py-3 rounded-lg bg-[var(--border-subtle)] border border-[var(--border-main)] shadow-sm">
+                            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Session</p>
+                            <p className="text-sm font-bold truncate">{user?.username || 'Teacher'}</p>
+                        </div>
+                        <button
+                            onClick={() => { closeSidebarOnMobile(); logout(); }}
+                            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-danger font-semibold hover:bg-danger/5 transition-colors group"
+                        >
+                            <Icons.Logout />
+                            <span className="text-sm">Sign out</span>
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={logout}
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-danger font-semibold hover:bg-danger/5 transition-colors group"
-                >
-                    <Icons.Logout />
-                    <span className="text-sm">Sign out</span>
-                </button>
-            </div>
-        </aside>
+            </aside>
+        </>
     );
 }
 

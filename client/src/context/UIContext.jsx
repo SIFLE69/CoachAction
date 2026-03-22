@@ -24,13 +24,15 @@ export function UIProvider({ children }) {
         }, 3000);
     };
 
-    const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
     return (
         <UIContext.Provider value={{
             theme, toggleTheme,
             toasts, showToast,
-            instituteName, setInstituteName
+            instituteName, setInstituteName,
+            sidebarOpen, setSidebarOpen
         }}>
             {children}
             {/* Toast Container */}
@@ -39,8 +41,8 @@ export function UIProvider({ children }) {
                     <div
                         key={t.id}
                         className={`px-5 py-3 rounded-xl shadow-lg border animate-in flex items-center gap-3 ${t.type === 'error'
-                                ? 'bg-danger text-white border-danger'
-                                : 'bg-success text-white border-success'
+                            ? 'bg-danger text-white border-danger'
+                            : 'bg-success text-white border-success'
                             }`}
                         style={{ minWidth: '240px' }}
                     >

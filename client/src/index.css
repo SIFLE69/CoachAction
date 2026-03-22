@@ -28,9 +28,10 @@
 
 /* — Design System Variables — */
 :root {
-  /* Light Mode (macOS/Notion inspired) */
-  --bg-main: #F8F9FB;
-  --bg-card: #FFFFFF;
+  /* Eye Comfort Light Mode (macOS/iOS inspired) */
+  --bg-main: #F5F6F8;
+  --bg-card: #FAFAFB;
+  --bg-elevated: #FFFFFF;
   --text-main: #1F2937;
   --text-muted: #6B7280;
   --border-main: #E5E7EB;
@@ -39,12 +40,12 @@
   --sidebar-bg: #FFFFFF;
   --sidebar-border: #E5E7EB;
   
-  /* Spacing Scale */
-  --space-xs: 8px;
-  --space-sm: 16px;
-  --space-md: 24px;
-  --space-lg: 32px;
-  --space-xl: 48px;
+  /* Spacing Scale (Responsive) */
+  --space-xs: 4px; /* Reduced for mobile */
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
   
   /* Radii */
   --radius-sm: 8px;
@@ -56,6 +57,7 @@
   /* Dark Mode (High Depth) */
   --bg-main: #0B0E14;
   --bg-card: #151921;
+  --bg-elevated: #1F2937;
   --text-main: #F9FAFB;
   --text-muted: #9CA3AF;
   --border-main: #1F2937;
@@ -68,6 +70,7 @@
 /* — Base Styles — */
 body {
   background-color: var(--bg-main);
+  background: linear-gradient(to bottom, var(--bg-main), #F8FAFC);
   color: var(--text-main);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -79,25 +82,43 @@ body {
 /* — Layout — */
 .page {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: var(--space-xl) var(--space-md);
+  padding: var(--space-md) 12px; /* Tighter padding for mobile */
   min-height: 100vh;
 }
 
+@media (min-width: 640px) {
+  .page {
+    padding: var(--space-lg) var(--space-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page {
+    padding: var(--space-xl) var(--space-lg);
+  }
+}
+
 .page-title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   color: var(--text-main);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+@media (min-width: 768px) {
+  .page-title {
+    font-size: 32px;
+  }
 }
 
 .page-subtitle {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-muted);
   font-weight: 400;
-  margin-top: var(--space-xs);
+  margin-top: 6px;
 }
 
 /* — Components — */
@@ -105,9 +126,13 @@ body {
   background-color: var(--bg-card);
   border: 1px solid var(--border-main);
   border-radius: var(--radius-lg);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.card-elevated {
+  background-color: var(--bg-elevated);
 }
 
 .input {

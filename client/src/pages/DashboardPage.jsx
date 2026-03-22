@@ -66,10 +66,10 @@ export default function DashboardPage() {
     return (
         <div className="page animate-in">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
                 <div>
-                    <h1 className="page-title">Executive Overview</h1>
-                    <p className="page-subtitle">
+                    <h1 className="page-title text-xl md:text-3xl">Executive Overview</h1>
+                    <p className="page-subtitle text-xs md:text-sm">
                         {streak > 0
                             ? `Consistent performance for ${streak} days`
                             : `Management overview for ${instituteName}`
@@ -77,14 +77,14 @@ export default function DashboardPage() {
                     </p>
                 </div>
                 {metrics && (
-                    <div className="flex gap-8">
-                        <div>
-                            <p className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-widest mb-1 text-right">Profit Margin</p>
-                            <p className="text-xl font-bold text-[var(--text-main)] text-right">{metrics.profitMargin}%</p>
+                    <div className="flex gap-4 md:gap-8 justify-between md:justify-end border-t border-b border-[var(--border-main)] md:border-none py-4 md:py-0">
+                        <div className="text-left md:text-right">
+                            <p className="text-[9px] md:text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-widest mb-1">Profit Margin</p>
+                            <p className="text-lg md:text-xl font-bold text-[var(--text-main)]">{metrics.profitMargin}%</p>
                         </div>
-                        <div className="pl-8 border-l border-[var(--border-main)]">
-                            <p className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-widest mb-1 text-right">Conversion</p>
-                            <p className="text-xl font-bold text-[var(--text-main)] text-right">{metrics.conversionRate}%</p>
+                        <div className="md:pl-8 md:border-l md:border-[var(--border-main)] text-left md:text-right">
+                            <p className="text-[9px] md:text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-widest mb-1">Conversion</p>
+                            <p className="text-lg md:text-xl font-bold text-[var(--text-main)]">{metrics.conversionRate}%</p>
                         </div>
                     </div>
                 )}
@@ -113,26 +113,26 @@ export default function DashboardPage() {
             )}
 
             {/* Core Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div className="card p-6 border-b-2 border-b-danger/30">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
+                <div className="card p-5 md:p-6 border-b-2 border-b-danger/30">
                     <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Money at Risk</p>
-                    <p className="text-2xl font-bold tracking-tight">{formatCurrency(moneyAtRisk)}</p>
+                    <p className="text-xl md:text-2xl font-bold tracking-tight">{formatCurrency(moneyAtRisk)}</p>
                 </div>
-                <div className="card p-6">
+                <div className="card p-5 md:p-6">
                     <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Pending Now</p>
-                    <p className="text-2xl font-bold text-danger tracking-tight">{formatCurrency(totalPending)}</p>
+                    <p className="text-xl md:text-2xl font-bold text-danger tracking-tight">{formatCurrency(totalPending)}</p>
                 </div>
-                <div className="card p-6">
+                <div className="card p-4 md:p-6">
                     <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Recent Inquiries</p>
-                    <p className="text-2xl font-bold tracking-tight">{metrics?.inquiries || 0}</p>
+                    <p className="text-xl md:text-2xl font-bold tracking-tight">{metrics?.inquiries || 0}</p>
                 </div>
-                <div className="card p-6">
+                <div className="card p-4 md:p-6">
                     <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Optimization Point</p>
-                    <p className="text-2xl font-bold text-primary-600 tracking-tight">{leaks.length > 0 ? 'Active' : 'Neutral'}</p>
+                    <p className="text-xl md:text-2xl font-bold text-primary-600 tracking-tight">{leaks.length > 0 ? 'Active' : 'Neutral'}</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
                 <div className="lg:col-span-2 space-y-12">
                     {/* Collections Table */}
                     <section>
@@ -141,32 +141,34 @@ export default function DashboardPage() {
                             <p className="text-[11px] font-bold text-[var(--text-muted)]">{pendingStudents.length} Students</p>
                         </div>
                         {pendingStudents.length > 0 ? (
-                            <div className="card">
-                                {pendingStudents.slice(0, 5).map(s => (
-                                    <div key={s._id} className="table-row">
-                                        <div className="flex items-center gap-4 flex-1">
-                                            <div className="w-9 h-9 rounded-lg bg-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--text-muted)]">
-                                                {s.name?.charAt(0)}
+                            <div className="card shadow-sm overflow-x-auto">
+                                <div className="min-w-[400px]">
+                                    {pendingStudents.slice(0, 5).map(s => (
+                                        <div key={s._id} className="table-row px-4 md:px-6">
+                                            <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                                                <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-[var(--border-subtle)] flex items-center justify-center text-[10px] md:text-xs font-bold text-[var(--text-muted)] flex-shrink-0">
+                                                    {s.name?.charAt(0)}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-[13px] md:text-[14px] font-bold truncate tracking-tight">{s.name}</p>
+                                                    <p className="text-[11px] md:text-[12px] text-[var(--text-muted)] truncate">Target: {formatCurrency(s.totalFees)}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-[14px] font-bold">{s.name}</p>
-                                                <p className="text-[12px] text-[var(--text-muted)]">Target: {formatCurrency(s.totalFees)}</p>
+                                            <div className="flex items-center gap-3 md:gap-8">
+                                                <div className="text-right flex-shrink-0">
+                                                    <p className="text-[13px] md:text-[15px] font-bold text-danger">{formatCurrency(s.pendingFees)}</p>
+                                                    <p className="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-tighter">Pending</p>
+                                                </div>
+                                                <button onClick={() => copyReminder(s)} className="btn btn-ghost px-2.5 md:px-4 h-8 md:h-9 text-[11px] md:text-xs flex-shrink-0">
+                                                    Remind
+                                                </button>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-8">
-                                            <div className="text-right">
-                                                <p className="text-[15px] font-bold text-danger">{formatCurrency(s.pendingFees)}</p>
-                                                <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-tighter">Pending</p>
-                                            </div>
-                                            <button onClick={() => copyReminder(s)} className="btn btn-ghost px-4 h-9 text-xs">
-                                                Remind
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         ) : (
-                            <div className="card p-12 text-center bg-success/[0.02] border-success/10">
+                            <div className="card p-12 text-center bg-success/[0.02] border-success/10 shadow-sm">
                                 <div className="text-success mb-3 flex justify-center"><Icons.Check /></div>
                                 <p className="text-sm font-bold">Ledger Clear</p>
                                 <p className="text-xs text-[var(--text-muted)] mt-1">Outstanding fees collection for this cycle is complete.</p>
@@ -175,7 +177,7 @@ export default function DashboardPage() {
                     </section>
 
                     {/* Proactive Growth Advice */}
-                    <section className="card p-6 bg-[var(--border-subtle)] border-[var(--border-main)]">
+                    <section className="card p-6 bg-[var(--border-subtle)] border-[var(--border-main)] shadow-sm">
                         <div className="flex gap-4">
                             <div className="text-primary-600 mt-1"><Icons.Lightbulb /></div>
                             <div>
@@ -198,7 +200,7 @@ export default function DashboardPage() {
                             <p className="section-label">Operational Leaks</p>
                             <div className="space-y-4">
                                 {leaks.slice(0, 3).map((leak, idx) => (
-                                    <div key={idx} className="card p-5 border-l-2 border-l-warning/50">
+                                    <div key={idx} className="card p-5 border-l-2 border-l-danger/30 shadow-sm">
                                         <p className="text-[13px] font-bold text-[var(--text-main)] mb-1">{leak.message}</p>
                                         <p className="text-[12px] text-[var(--text-muted)] leading-normal">{leak.fix}</p>
                                     </div>
@@ -211,4 +213,3 @@ export default function DashboardPage() {
         </div>
     );
 }
-

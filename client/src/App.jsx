@@ -11,6 +11,24 @@ import FeesPage from './pages/FeesPage';
 import SettingsPage from './pages/SettingsPage';
 import Sidebar from './components/Sidebar';
 
+function MobileHeader() {
+  const { setSidebarOpen, instituteName } = useUI();
+  return (
+    <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[var(--sidebar-bg)] border-b border-[var(--sidebar-border)] sticky top-0 z-40">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-black text-sm shadow-sm">C</div>
+        <p className="text-lg font-bold tracking-tight truncate max-w-[150px]">{instituteName}</p>
+      </div>
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="p-2 rounded-lg hover:bg-[var(--border-subtle)] transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
+      </button>
+    </header>
+  );
+}
+
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return (
@@ -19,9 +37,17 @@ function PrivateRoute({ children }) {
     </div>
   );
   return user ? (
-    <div className="flex min-h-screen bg-[var(--bg-main)] selection:bg-primary-500/30 selection:text-primary-900 dark:selection:text-primary-100 italic-selection">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[var(--bg-main)]">
+      {/* Sidebar for desktop + Mobile header */}
       <Sidebar />
-      <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto scroll-smooth">{children}</main>
+      <div className="flex-1 flex flex-col min-h-0 min-w-0">
+        <MobileHeader />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto scroll-smooth">
+          <div className="mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   ) : <Navigate to="/login" replace />;
 }

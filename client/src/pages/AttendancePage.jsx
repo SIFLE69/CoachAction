@@ -114,50 +114,52 @@ export default function AttendancePage() {
                             <TableSkeleton rows={5} />
                         ) : (
                             <>
-                                <div className="card shadow-sm">
-                                    <div className="table-header hidden md:flex">
-                                        <div className="flex-1">Student Particulars</div>
-                                        <div className="w-64 text-right">Verification Status</div>
+                                <div className="card shadow-sm overflow-x-auto">
+                                    <div className="min-w-[450px]">
+                                        <div className="table-header hidden md:flex">
+                                            <div className="flex-1">Student Particulars</div>
+                                            <div className="w-64 text-right">Verification Status</div>
+                                        </div>
+                                        {(students || []).map((s, i) => {
+                                            const id = s._id || s.id;
+                                            return (
+                                                <div key={id || `mark-${i}`} className="flex flex-col md:flex-row gap-4 items-stretch md:items-center px-4 md:px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors">
+                                                    <div className="flex-1 flex items-center gap-4 min-w-0">
+                                                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ${s.status === 'present' ? 'bg-success/5 text-success' : 'bg-danger/5 text-danger'}`}>
+                                                            <Icons.Check />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-[14.5px] font-bold tracking-tight truncate">{s.name}</p>
+                                                            <p className={`text-[10px] font-black uppercase tracking-widest ${s.status === 'present' ? 'text-success/80' : 'text-danger/80'}`}>{s.status}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => { const n = [...students]; n[i].status = 'present'; setStudents(n); }}
+                                                            className={`flex-1 md:flex-none px-6 h-9 rounded-lg text-[12.5px] font-bold transition-all border ${s.status === 'present' ? 'bg-success border-success text-white shadow-sm' : 'border-[var(--border-main)] text-[var(--text-muted)] hover:bg-success/5 hover:text-success'}`}
+                                                        >
+                                                            P
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { const n = [...students]; n[i].status = 'absent'; setStudents(n); }}
+                                                            className={`flex-1 md:flex-none px-6 h-9 rounded-lg text-[12.5px] font-bold transition-all border ${s.status === 'absent' ? 'bg-danger border-danger text-white shadow-sm' : 'border-[var(--border-main)] text-[var(--text-muted)] hover:bg-danger/5 hover:text-danger'}`}
+                                                        >
+                                                            A
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {(students || []).length === 0 && (
+                                            <div className="p-16 text-center text-[13px] text-[var(--text-muted)] font-medium">No active records for this cohort.</div>
+                                        )}
                                     </div>
-                                    {(students || []).map((s, i) => {
-                                        const id = s._id || s.id;
-                                        return (
-                                            <div key={id || `mark-${i}`} className="table-row flex-col md:flex-row gap-4 items-stretch md:items-center">
-                                                <div className="flex-1 flex items-center gap-4">
-                                                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${s.status === 'present' ? 'bg-success/5 text-success' : 'bg-danger/5 text-danger'}`}>
-                                                        <Icons.Check />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-[14.5px] font-bold tracking-tight">{s.name}</p>
-                                                        <p className={`text-[11px] font-black uppercase tracking-widest ${s.status === 'present' ? 'text-success/80' : 'text-danger/80'}`}>{s.status}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => { const n = [...students]; n[i].status = 'present'; setStudents(n); }}
-                                                        className={`flex-1 md:flex-none px-5 h-9 rounded-lg text-[12.5px] font-bold transition-all border ${s.status === 'present' ? 'bg-success border-success text-white' : 'border-[var(--border-main)] text-[var(--text-muted)] hover:bg-success/5 hover:text-success'}`}
-                                                    >
-                                                        P
-                                                    </button>
-                                                    <button
-                                                        onClick={() => { const n = [...students]; n[i].status = 'absent'; setStudents(n); }}
-                                                        className={`flex-1 md:flex-none px-5 h-9 rounded-lg text-[12.5px] font-bold transition-all border ${s.status === 'absent' ? 'bg-danger border-danger text-white' : 'border-[var(--border-main)] text-[var(--text-muted)] hover:bg-danger/5 hover:text-danger'}`}
-                                                    >
-                                                        A
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {(students || []).length === 0 && (
-                                        <div className="p-16 text-center text-[13px] text-[var(--text-muted)] font-medium">No active records for this cohort.</div>
-                                    )}
                                 </div>
                                 <div className="flex justify-end">
                                     <button
                                         onClick={markAttendance}
                                         disabled={loading || (students || []).length === 0}
-                                        className="btn btn-primary h-11 px-10 shadow-lg"
+                                        className="btn btn-primary h-11 px-10 shadow-lg w-full md:w-auto"
                                     >
                                         {loading ? 'Processing...' : 'Sync Records'}
                                     </button>
@@ -224,4 +226,3 @@ export default function AttendancePage() {
         </div>
     );
 }
-

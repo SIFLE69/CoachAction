@@ -173,26 +173,26 @@ export default function StudentsPage() {
                         const id = s._id || s.id;
                         return (
                             <div key={id || `student-${idx}`} className="border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors">
-                                <div className="flex flex-col lg:flex-row lg:items-center gap-6 px-6 py-4">
-                                    <div className="flex-1 flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-lg bg-primary-600/5 flex items-center justify-center text-xs font-bold text-primary-600">
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6 px-4 md:px-6 py-4">
+                                    <div className="flex-1 flex items-center gap-3 md:gap-4 min-w-0">
+                                        <div className="w-10 h-10 rounded-lg bg-primary-600/5 flex items-center justify-center text-xs font-bold text-primary-600 flex-shrink-0">
                                             {s.name?.charAt(0)}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[14px] font-bold tracking-tight">{s.name}</p>
-                                            <p className="text-[12px] text-[var(--text-muted)]">{s.phone || 'No phone recorded'}</p>
+                                            <p className="text-[14px] font-bold tracking-tight truncate">{s.name}</p>
+                                            <p className="text-[12px] text-[var(--text-muted)] truncate">{s.phone || 'No phone recorded'}</p>
                                         </div>
                                     </div>
-                                    <div className="w-32 flex-shrink-0">
-                                        <span className="text-[12px] font-semibold px-2.5 py-1 rounded bg-[var(--border-subtle)] text-[var(--text-muted)]">
+                                    <div className="w-full lg:w-32 flex-shrink-0">
+                                        <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-[var(--border-subtle)] text-[var(--text-muted)]">
                                             {s.batchId?.name || 'Unassigned'}
                                         </span>
                                     </div>
-                                    <div className="w-32 text-left lg:text-right flex-shrink-0">
+                                    <div className="w-full lg:w-32 text-left lg:text-right flex-shrink-0">
                                         <p className={`text-[14px] font-bold ${(s.pendingFees || 0) > 0 ? 'text-danger' : 'text-success'}`}>
                                             {formatCurrency(s.pendingFees || 0)}
                                         </p>
-                                        <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase">Balance</p>
+                                        <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tighter">Balance</p>
                                     </div>
                                     <div className="w-32 text-center flex-shrink-0 hidden lg:block">
                                         <span className={`text-[11px] font-bold px-3 py-1 rounded-sm ${(s.engagementScore || 0) > 70 ? 'bg-success/5 text-success' :
@@ -201,7 +201,7 @@ export default function StudentsPage() {
                                             {s.engagementScore || 0}
                                         </span>
                                     </div>
-                                    <div className="w-full lg:w-40 text-right flex-shrink-0 flex gap-2 justify-start lg:justify-end items-center">
+                                    <div className="w-full lg:w-40 text-right flex-shrink-0 flex gap-2 justify-start lg:justify-end items-center mt-2 lg:mt-0">
                                         <button
                                             onClick={() => toggleTrend(id)}
                                             className={`btn h-8 text-[11px] px-3 ${expandedStudent === id ? 'btn-primary' : 'btn-ghost'}`}
@@ -218,10 +218,12 @@ export default function StudentsPage() {
                                     </div>
                                 </div>
                                 {expandedStudent === id && (
-                                    <div className="px-6 pb-6 pt-2 animate-in">
-                                        <div className="bg-[var(--bg-main)]/50 rounded-xl p-6 border border-[var(--border-main)]">
+                                    <div className="px-4 md:px-6 pb-6 pt-2 animate-in overflow-hidden">
+                                        <div className="bg-[var(--bg-main)]/50 rounded-xl p-4 md:p-6 border border-[var(--border-main)] overflow-x-auto">
                                             <p className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4">Historical Engagement</p>
-                                            <AttendanceChart data={attendanceData} />
+                                            <div className="min-w-[500px]">
+                                                <AttendanceChart data={attendanceData} />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
