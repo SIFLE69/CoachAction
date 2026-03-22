@@ -21,7 +21,7 @@ router.get('/batches/performance', auth, async (req, res) => {
 
         const performanceData = batches.map(batch => {
             const batchStudents = students.filter(s => s.batchId?.toString() === batch._id.toString());
-            const totalRevenue = batchStudents.reduce((sum, s) => sum + s.paidFees, 0);
+            const totalRevenue = batchStudents.reduce((sum, s) => sum + (s.paidFees || 0), 0);
 
             // Calc avg attendance
             const studentAttendances = attendance.filter(a => batchStudents.some(s => s._id.toString() === a.studentId?.toString()));
@@ -29,7 +29,9 @@ router.get('/batches/performance', auth, async (req, res) => {
             const avgAttendance = studentAttendances.length > 0 ? Math.round((present / studentAttendances.length) * 100) : 100;
 
             return {
+                _id: batch._id,
                 name: batch.name,
+                timing: batch.timing,
                 studentCount: batchStudents.length,
                 avgAttendance,
                 revenue: totalRevenue
@@ -44,6 +46,15 @@ router.post('/batches', auth, async (req, res) => {
     try {
         const batch = await Batch.create({ ...req.body, userId: req.userId });
         res.status(201).json(batch);
+    } catch (err) { res.status(500).json({ error: 'Server Error' }); }
+});
+
+router.delete('/batches/:id', auth, async (req, res) => {
+    try {
+        await Batch.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+        // Optional: Remove batch reference from students
+        await Student.updateMany({ batchId: req.params.id }, { $unset: { batchId: 1 } });
+        res.json({ message: 'Batch deleted' });
     } catch (err) { res.status(500).json({ error: 'Server Error' }); }
 });
 

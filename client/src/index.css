@@ -1,191 +1,258 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
+  /* Premium Palette */
+  --color-primary-50: #f5f7ff;
+  --color-primary-100: #ebf0fe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  
+  /* Slate/Gray for Text */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
 
-  --color-surface-50: #fafafa;
-  --color-surface-100: #f5f5f5;
-  --color-surface-200: #e5e5e5;
-  --color-surface-300: #d4d4d4;
-  --color-surface-400: #a3a3a3;
-  --color-surface-500: #737373;
-  --color-surface-600: #525252;
-  --color-surface-700: #404040;
-  --color-surface-800: #262626;
-  --color-surface-900: #171717;
-  --color-surface-950: #0a0a0a;
-
-  --color-success: #22c55e;
-  --color-warning: #eab308;
+  /* Semantic */
+  --color-success: #10b981;
   --color-danger: #ef4444;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* — Reset & Base — */
+/* — Design System Variables — */
+:root {
+  /* Light Mode (macOS/Notion inspired) */
+  --bg-main: #F8F9FB;
+  --bg-card: #FFFFFF;
+  --text-main: #1F2937;
+  --text-muted: #6B7280;
+  --border-main: #E5E7EB;
+  --border-subtle: #F1F5F9;
+  --input-bg: #FFFFFF;
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: #E5E7EB;
+  
+  /* Spacing Scale */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+.dark {
+  /* Dark Mode (High Depth) */
+  --bg-main: #0B0E14;
+  --bg-card: #151921;
+  --text-main: #F9FAFB;
+  --text-muted: #9CA3AF;
+  --border-main: #1F2937;
+  --border-subtle: #161B22;
+  --input-bg: #1F2937;
+  --sidebar-bg: #0B0E14;
+  --sidebar-border: #1F2937;
+}
+
+/* — Base Styles — */
 body {
-  background: var(--color-surface-950);
-  color: #e5e5e5;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* — Scrollbar — */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+/* — Layout — */
+.page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md);
+  min-height: 100vh;
+}
 
-/* — No global transitions — apply selectively — */
-* { transition: none; }
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
 
-/* — Notion-style card — */
+.page-subtitle {
+  font-size: 15px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: var(--space-xs);
+}
+
+/* — Components — */
 .card {
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 14px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* — Interactive elements get smooth transitions — */
-button, a, input, select, textarea, .transition-smooth {
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-button:active {
-  transform: scale(0.97);
-}
-
-/* — Subtle fade-in — */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-in {
-  animation: fadeIn 0.35s ease-out forwards;
-}
-
-/* — Badge styles — */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-.badge-green { background: rgba(34,197,94,0.15); color: #4ade80; }
-.badge-red { background: rgba(239,68,68,0.15); color: #f87171; }
-.badge-yellow { background: rgba(234,179,8,0.15); color: #facc15; }
-.badge-neutral { background: rgba(255,255,255,0.07); color: #a3a3a3; }
-
-/* — Input base — */
 .input {
   width: 100%;
-  padding: 12px 16px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  color: #f0f0f0;
-  font-size: 15px;
+  padding: 10px 14px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-size: 14px;
   outline: none;
+  transition: all 0.15s ease;
 }
+
 .input:focus {
-  border-color: rgba(99,102,241,0.5);
-  background: rgba(255,255,255,0.07);
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-}
-.input::placeholder { color: rgba(255,255,255,0.25); }
-
-/* — Select / Dropdown — high contrast — */
-select.input,
-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  padding-right: 36px;
-  cursor: pointer;
-}
-select option {
-  background: #1a1a1a;
-  color: #f0f0f0;
-  padding: 10px;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
 }
 
-/* — Button base — */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 12px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
 }
-.btn-primary { background: #4f46e5; color: white; }
-.btn-primary:hover { background: #4338ca; }
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background-color: var(--color-primary-600);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-500);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.1), 0 2px 4px -1px rgba(37, 99, 235, 0.06);
+}
+
 .btn-ghost {
-  background: rgba(255,255,255,0.05);
-  color: #b0b0b0;
-  border: 1px solid rgba(255,255,255,0.08);
+  background-color: transparent;
+  color: var(--text-muted);
+  border-color: var(--border-main);
 }
-.btn-ghost:hover { background: rgba(255,255,255,0.1); color: #f0f0f0; }
-.btn-success { background: rgba(34,197,94,0.18); color: #4ade80; }
-.btn-success:hover { background: rgba(34,197,94,0.28); }
-.btn-danger { background: rgba(239,68,68,0.18); color: #f87171; }
-.btn-danger:hover { background: rgba(239,68,68,0.28); }
 
-/* — Section label — */
-.section-label {
+.btn-ghost:hover {
+  background-color: var(--border-subtle);
+  color: var(--text-main);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
   font-size: 12px;
-  font-weight: 600;
-  color: #888;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
-/* — Table — */
+.badge-green { background-color: rgba(16, 185, 129, 0.08); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.1); }
+.badge-red { background-color: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.1); }
+
+/* — Table Styling — */
+.table-header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-main);
+  background-color: var(--bg-main);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .table-row {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.table-row:hover { background: rgba(255,255,255,0.025); }
-.table-row:last-child { border-bottom: none; }
-
-/* — Page wrapper — WIDE & CENTERED — */
-.page {
-  width: 100%;
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 40px 48px;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background-color 0.15s ease;
 }
 
-/* — Page title — */
-.page-title {
-  font-size: 28px;
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:hover {
+  background-color: var(--bg-main);
+}
+
+/* — Scrollbar — */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-main);
+  border-radius: 20px;
+  border: 2px solid var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* — Animations — */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: slideUp 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+/* — Utilities — */
+.section-label {
+  font-size: 12px;
   font-weight: 700;
-  color: white;
-  letter-spacing: -0.02em;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+  display: block;
 }
-.page-subtitle {
-  font-size: 15px;
-  color: #888;
-  margin-top: 4px;
+
+/* — Functional Shims — */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+
