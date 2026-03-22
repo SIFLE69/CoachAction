@@ -13,7 +13,7 @@ const Icons = {
 
 export default function DashboardPage() {
     const { user } = useAuth();
-    const { showToast, instituteName } = useUI();
+    const { showToast, instituteName, formatCurrency } = useUI();
     const [briefing, setBriefing] = useState(null);
     const [insights, setInsights] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -36,7 +36,6 @@ export default function DashboardPage() {
         showToast('Reminder copied to clipboard');
     };
 
-    const formatCurrency = (val) => `₹${Number(val).toLocaleString('en-IN')}`;
 
     if (loading) return (
         <div className="page animate-in">

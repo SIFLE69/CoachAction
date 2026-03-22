@@ -89,16 +89,17 @@ export default function AttendancePage() {
 
             {/* Batch Selection */}
             <div className="mb-12">
-                <p className="section-label mb-4">Target Cohort</p>
+                <p className="section-title mb-6">Target Cohort</p>
                 <div className="flex flex-wrap gap-3">
                     {(batches || []).map((b, idx) => (
                         <button
                             key={b._id || b.id || idx}
                             onClick={() => handleBatchSelect(b._id || b.id)}
-                            className={`px-5 py-2.5 rounded-lg text-[13.5px] font-semibold transition-all border ${selectedBatch === (b._id || b.id)
+                            className={`px-5 py-2.5 rounded-lg text-[13.5px] font-semibold transition-all border scale-in ${selectedBatch === (b._id || b.id)
                                 ? 'bg-primary-600 border-primary-600 text-white shadow-md'
                                 : 'bg-[var(--bg-card)] border-[var(--border-main)] text-[var(--text-muted)] hover:border-primary-500 hover:text-primary-600'
                                 }`}
+                            style={{ animationDelay: `${idx * 30}ms`, opacity: 0 }}
                         >
                             {b.name}
                         </button>
@@ -123,7 +124,11 @@ export default function AttendancePage() {
                                         {(students || []).map((s, i) => {
                                             const id = s._id || s.id;
                                             return (
-                                                <div key={id || `mark-${i}`} className="flex flex-col md:flex-row gap-4 items-stretch md:items-center px-4 md:px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors">
+                                                <div
+                                                    key={id || `mark-${i}`}
+                                                    className="flex flex-col md:flex-row gap-4 items-stretch md:items-center px-4 md:px-6 py-5 border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors animate-in"
+                                                    style={{ animationDelay: `${i * 40}ms`, opacity: 0 }}
+                                                >
                                                     <div className="flex-1 flex items-center gap-4 min-w-0">
                                                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ${s.status === 'present' ? 'bg-success/5 text-success' : 'bg-danger/5 text-danger'}`}>
                                                             <Icons.Check />

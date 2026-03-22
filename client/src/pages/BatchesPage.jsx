@@ -12,7 +12,7 @@ const Icons = {
 };
 
 export default function BatchesPage() {
-    const { showToast } = useUI();
+    const { showToast, formatCurrency } = useUI();
     const [batches, setBatches] = useState([]);
     const [performance, setPerformance] = useState([]);
     const [form, setForm] = useState({ name: '', timing: '' });
@@ -62,7 +62,6 @@ export default function BatchesPage() {
         }
     };
 
-    const formatCurrency = (val) => `₹${Number(val).toLocaleString('en-IN')}`;
 
     return (
         <div className="page animate-in">
@@ -104,7 +103,7 @@ export default function BatchesPage() {
                 </div>
             ) : (
                 <>
-                    <p className="section-label mb-6 px-1">Cohort Performance Metrics</p>
+                    <p className="section-title mb-6 px-1">Cohort Performance Metrics</p>
                     <div className="card shadow-sm overflow-x-auto">
                         <div className="min-w-[800px]">
                             <div className="hidden lg:flex table-header">
@@ -115,17 +114,20 @@ export default function BatchesPage() {
                                 <div className="w-20"></div>
                             </div>
                             {(performance || []).map((b, idx) => {
-                                // Robust ID resolution
                                 const id = b._id || b.id || b.batchId;
                                 const resolvedId = id || (batches.find(bx => bx.name === b.name)?._id);
 
                                 return (
-                                    <div key={resolvedId || `batch-${idx}`} className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-0 px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 group hover:bg-[var(--bg-main)]/50 transition-colors">
+                                    <div
+                                        key={resolvedId || `batch-${idx}`}
+                                        className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-0 px-6 py-5 border-b border-[var(--border-subtle)] last:border-0 group hover:bg-[var(--bg-main)]/50 transition-colors animate-in"
+                                        style={{ animationDelay: `${idx * 50}ms`, opacity: 0 }}
+                                    >
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[15px] font-bold tracking-tight truncate">{b.name}</p>
-                                            <div className="flex items-center gap-1.5 mt-0.5 text-[var(--text-muted)]">
+                                            <div className="flex items-center gap-1.5 mt-1 text-[var(--text-muted)]">
                                                 <Icons.Clock />
-                                                <p className="text-[11px] font-medium pt-0.5 truncate">{b.timing}</p>
+                                                <p className="text-[11px] font-medium truncate">{b.timing}</p>
                                             </div>
                                         </div>
                                         <div className="w-full lg:w-32 text-left lg:text-center shrink-0">

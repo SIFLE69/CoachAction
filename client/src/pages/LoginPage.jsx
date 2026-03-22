@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useUI } from '../context/UIContext';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function LoginPage() {
@@ -8,6 +9,7 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
+    const { instituteLogo } = useUI();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -29,7 +31,7 @@ export default function LoginPage() {
             <div className="w-full max-w-sm animate-in">
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center gap-3 mb-4">
-                        <div className="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white text-base font-bold shadow-lg">C</div>
+                        <img src={instituteLogo || "/logo.png"} alt="CoachAction" className="w-10 h-10 rounded-xl shadow-lg object-contain" />
                         <span className="text-2xl font-semibold text-[var(--text-main)] tracking-tight">CoachAction</span>
                     </div>
                     <p className="text-[var(--text-muted)] text-sm font-medium">Elevating your strategic management</p>

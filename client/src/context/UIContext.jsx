@@ -6,6 +6,8 @@ export function UIProvider({ children }) {
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
     const [toasts, setToasts] = useState([]);
     const [instituteName, setInstituteName] = useState(localStorage.getItem('instituteName') || 'CoachAction');
+    const [instituteLogo, setInstituteLogo] = useState(localStorage.getItem('instituteLogo') || '');
+    const [currency, setCurrency] = useState(localStorage.getItem('currency') || 'INR');
 
     useEffect(() => {
         document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -15,6 +17,29 @@ export function UIProvider({ children }) {
     useEffect(() => {
         localStorage.setItem('instituteName', instituteName);
     }, [instituteName]);
+
+    useEffect(() => {
+        localStorage.setItem('currency', currency);
+    }, [currency]);
+
+    useEffect(() => {
+        localStorage.setItem('instituteLogo', instituteLogo);
+        // Update favicon dynamically
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+        }
+        link.href = instituteLogo || '/logo.png';
+    }, [instituteLogo]);
+
+    const formatCurrency = (val) => {
+        const amount = Number(val) || 0;
+        const locales = currency === 'INR' ? 'en-IN' : 'en-US';
+        const symbol = currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : (currency === 'EUR' ? '€' : (currency === 'GBP' ? '£' : currency)));
+        return `${symbol}${amount.toLocaleString(locales, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+    };
 
     const showToast = (message, type = 'success') => {
         const id = Math.random().toString(36).substr(2, 9);
@@ -32,6 +57,8 @@ export function UIProvider({ children }) {
             theme, toggleTheme,
             toasts, showToast,
             instituteName, setInstituteName,
+            instituteLogo, setInstituteLogo,
+            currency, setCurrency, formatCurrency,
             sidebarOpen, setSidebarOpen
         }}>
             {children}

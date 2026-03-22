@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 import { useUI } from '../context/UIContext';
-import { TableSkeleton, Skeleton } from '../components/Skeleton';
+import { TableSkeleton } from '../components/Skeleton';
 
 const Icons = {
     CreditCard: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>,
@@ -10,7 +10,7 @@ const Icons = {
 };
 
 export default function FeesPage() {
-    const { showToast, instituteName } = useUI();
+    const { showToast, instituteName, formatCurrency } = useUI();
     const [students, setStudents] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState('');
     const [amount, setAmount] = useState('');
@@ -35,7 +35,7 @@ export default function FeesPage() {
         e.preventDefault();
         try {
             await api.post('/payments', { studentId: selectedStudent, amount: Number(amount) });
-            showToast(`Recorded payment of ₹${Number(amount).toLocaleString()}`);
+            showToast(`Recorded payment of ${formatCurrency(amount)}`);
             setAmount('');
             setSelectedStudent('');
             setShowPayment(false);
@@ -46,12 +46,11 @@ export default function FeesPage() {
     };
 
     const copyReminder = (student) => {
-        const pending = student.totalFees - student.paidFees;
-        navigator.clipboard.writeText(`Hi ${student.name}, your ₹${pending.toLocaleString()} fees are pending for ${instituteName}. Please clear it soon.`);
+        const pendingValue = student.pendingFees || (student.totalFees - (student.paidFees || 0));
+        navigator.clipboard.writeText(`Hi ${student.name}, your ${formatCurrency(pendingValue)} fees are pending for ${instituteName}. Please clear it soon.`);
         showToast('Reminder copied to clipboard');
     };
 
-    const formatCurrency = (val) => `₹${Number(val).toLocaleString('en-IN')}`;
     const totalOutstanding = students.reduce((sum, s) => sum + ((s.pendingFees || 0)), 0);
 
     return (
@@ -82,7 +81,7 @@ export default function FeesPage() {
                             </select>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider pl-0.5">Authorized Amount (₹)</label>
+                            <label className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider pl-0.5">Authorized Amount ({localStorage.getItem('currency') === 'INR' ? '₹' : (localStorage.getItem('currency') === 'USD' ? '$' : '')})</label>
                             <input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="input h-10 font-bold" placeholder="0" required />
                         </div>
                     </div>
@@ -102,19 +101,23 @@ export default function FeesPage() {
                     {/* Pending Action Items */}
                     {pendingFees.length > 0 && (
                         <section>
-                            <p className="section-label mb-6">Immediate Attention Required</p>
+                            <p className="section-title mb-6">Immediate Attention Required</p>
                             <div className="card shadow-sm border-danger/10">
-                                {pendingFees.map(s => {
-                                    const pending = s.totalFees - s.paidFees;
+                                {pendingFees.map((s, idx) => {
+                                    const pendingValue = s.pendingFees || (s.totalFees - (s.paidFees || 0));
                                     return (
-                                        <div key={s._id} className="table-row hover:bg-danger/[0.01]">
+                                        <div
+                                            key={s._id}
+                                            className="table-row hover:bg-danger/[0.01] animate-in"
+                                            style={{ animationDelay: `${idx * 100}ms`, opacity: 0 }}
+                                        >
                                             <div className="flex-1 flex items-center gap-4">
                                                 <div className="w-9 h-9 rounded bg-danger/5 flex items-center justify-center text-xs font-bold text-danger">
                                                     {s.name?.charAt(0)}
                                                 </div>
                                                 <div>
                                                     <p className="text-[14px] font-bold">{s.name}</p>
-                                                    <p className="text-[11px] font-bold text-danger uppercase tracking-tight">{formatCurrency(pending)} Overdue</p>
+                                                    <p className="text-[11px] font-bold text-danger uppercase tracking-tight">{formatCurrency(pendingValue)} Overdue</p>
                                                 </div>
                                             </div>
                                             <button
@@ -132,7 +135,7 @@ export default function FeesPage() {
 
                     {/* Master Ledger List */}
                     <section>
-                        <p className="section-label mb-6 px-1">Aggregate Financial Ledger</p>
+                        <p className="section-title mb-6 px-1">Aggregate Financial Ledger</p>
                         <div className="card shadow-sm overflow-x-auto">
                             <div className="min-w-[800px]">
                                 <div className="hidden lg:flex table-header">
@@ -141,11 +144,15 @@ export default function FeesPage() {
                                     <div className="w-32 text-right">Recognized</div>
                                     <div className="w-32 text-right">Balance</div>
                                 </div>
-                                {students.length > 0 ? students.map(s => (
-                                    <div key={s._id} className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-0 px-6 py-4 border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors">
+                                {students.length > 0 ? students.map((s, idx) => (
+                                    <div
+                                        key={s._id}
+                                        className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-0 px-6 py-5 border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--bg-main)]/50 transition-colors animate-in"
+                                        style={{ animationDelay: `${idx * 40}ms`, opacity: 0 }}
+                                    >
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[14px] font-bold tracking-tight truncate">{s.name}</p>
-                                            <div className="flex items-center gap-2 mt-0.5">
+                                            <div className="flex items-center gap-2 mt-1">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
                                                 <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tight">Verified Account</p>
                                             </div>

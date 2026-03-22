@@ -13,7 +13,7 @@ const Icons = {
 };
 
 export default function StudentsPage() {
-    const { showToast } = useUI();
+    const { showToast, formatCurrency } = useUI();
     const [students, setStudents] = useState([]);
     const [batches, setBatches] = useState([]);
     const [form, setForm] = useState({ name: '', phone: '', batchId: '', totalFees: 0 });
@@ -84,7 +84,6 @@ export default function StudentsPage() {
         s.batchId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const formatCurrency = (val) => `₹${Number(val).toLocaleString('en-IN')}`;
 
     return (
         <div className="page animate-in">

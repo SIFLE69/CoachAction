@@ -8,12 +8,22 @@ const Icons = {
 };
 
 export default function SettingsPage() {
-    const { theme, toggleTheme, showToast, instituteName, setInstituteName } = useUI();
+    const {
+        theme, toggleTheme, showToast,
+        instituteName, setInstituteName,
+        instituteLogo, setInstituteLogo,
+        currency, setCurrency
+    } = useUI();
+
     const [name, setName] = useState(instituteName);
+    const [logo, setLogo] = useState(instituteLogo);
+    const [localCurrency, setLocalCurrency] = useState(currency);
 
     const handleSaveGeneral = () => {
         setInstituteName(name);
-        showToast('Configuration updated');
+        setInstituteLogo(logo);
+        setCurrency(localCurrency);
+        showToast('Brand identity updated');
     };
 
     const resetData = () => {
@@ -46,8 +56,36 @@ export default function SettingsPage() {
                                 placeholder="Academy Name"
                             />
                         </div>
-                        <button onClick={handleSaveGeneral} className="btn btn-primary h-10 px-8 w-fit">
-                            Commit Changes
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider pl-0.5">
+                                Brand Asset (Logo URL)
+                            </label>
+                            <input
+                                type="text"
+                                value={logo}
+                                onChange={(e) => setLogo(e.target.value)}
+                                className="input h-10 font-medium"
+                                placeholder="Paste your logo's direct URL here"
+                            />
+                            <p className="text-[10px] text-[var(--text-muted)] pl-1">Leave empty to use the default CoachAction logo.</p>
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider pl-0.5">
+                                Base Currency
+                            </label>
+                            <select
+                                value={localCurrency}
+                                onChange={(e) => setLocalCurrency(e.target.value)}
+                                className="input h-10 px-2 font-medium"
+                            >
+                                <option value="INR">INR (₹)</option>
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                            </select>
+                        </div>
+                        <button onClick={handleSaveGeneral} className="btn btn-primary h-11 px-10 w-fit shadow-lg mt-2">
+                            Apply Identity Changes
                         </button>
                     </div>
                 </section>
@@ -88,4 +126,3 @@ export default function SettingsPage() {
         </div>
     );
 }
-

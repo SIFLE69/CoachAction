@@ -14,7 +14,7 @@ const Icons = {
 
 export default function Sidebar() {
     const { logout, user } = useAuth();
-    const { instituteName, sidebarOpen, setSidebarOpen } = useUI();
+    const { instituteName, instituteLogo, sidebarOpen, setSidebarOpen } = useUI();
     const location = useLocation();
 
     const navItems = [
@@ -45,7 +45,7 @@ export default function Sidebar() {
                     <div className="p-6">
                         <div className="flex items-center justify-between mb-10 px-2">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-black text-sm shadow-md">C</div>
+                                <img src={instituteLogo || "/logo.png"} alt="CoachAction" className="w-8 h-8 rounded-lg object-contain shadow-md" />
                                 <p className="text-lg font-bold tracking-tight truncate">{instituteName}</p>
                             </div>
                             <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 rounded-md hover:bg-[var(--border-subtle)]">

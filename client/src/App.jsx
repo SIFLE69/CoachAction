@@ -12,11 +12,11 @@ import SettingsPage from './pages/SettingsPage';
 import Sidebar from './components/Sidebar';
 
 function MobileHeader() {
-  const { setSidebarOpen, instituteName } = useUI();
+  const { instituteName, instituteLogo, setSidebarOpen } = useUI();
   return (
     <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[var(--sidebar-bg)] border-b border-[var(--sidebar-border)] sticky top-0 z-40">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black font-black text-sm shadow-sm">C</div>
+        <img src={instituteLogo || "/logo.png"} alt="Logo" className="w-8 h-8 rounded-lg object-contain shadow-sm" />
         <p className="text-lg font-bold tracking-tight truncate max-w-[150px]">{instituteName}</p>
       </div>
       <button
